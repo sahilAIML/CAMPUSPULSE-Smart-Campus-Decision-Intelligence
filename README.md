@@ -105,12 +105,12 @@ Unlike retrospective dashboards that report failures after semester finals, Camp
 | **Faculty (Alternate)** | Dr. K.V. Krishna Kishore (`CSE_001`) | `k.v.krishna.kishore@campus.edu.in` | `Password@123` | [**Live `/faculty`**](https://campuspulse.bytexl.live/faculty) |
 | **Admin** | Dr. K. Ramanathan (`ADM001`) | `admin@campus.edu.in` | `Password@123` | [**Live `/admin`**](https://campuspulse.bytexl.live/admin) |
 
-*Note: 1-click Quick Login shortcuts are also available directly on the [Live Landing Page](https://campuspulse.bytexl.live/) auth modal and login screen.*
-
-### 🔐 Self-Service Forgot Password & Security
-- **Forgot Password Flow**: Accessible directly from both the landing page Auth Modal and the dedicated `/login` page.
-- **Custom Password Choice**: Students and faculty can select their role, provide their registered `@campus.edu.in` email, and set their own custom password with instant local verification and automatic session login.
-- **Clean Input Fields**: Form inputs feature clean, uncluttered `Email` and `Password` placeholders with zero hardcoded default values.
+### 🔐 Strict Institutional Security & Hardened Authentication
+- **Whitelist-Only Access**: ONLY the 5 verified institutional accounts above are allowed to authenticate. Unregistered emails and external domains are blocked with instant `Access Denied` security alarms.
+- **Strict Password Enforcement**: Every login strictly verifies the password against `Password@123` (or user's custom-chosen password). Invalid passwords trigger immediate denial (`Authentication Failed: Incorrect password`).
+- **Role Verification**: Enforces role matching between selected role tab and database account profile to prevent privilege escalation.
+- **Brute-Force & Intrusion Defense**: Automatically tracks failed login attempts; locks out brute-force attacks after 5 consecutive failures with a 60-second cooldown defense.
+- **Clean White Theme Exclusively**: Locked to a high-contrast Clean White Clay theme with crisp white text over dark backgrounds and deep slate `#0F172A` text on white cards. Theme toggles have been removed.
 
 ---
 

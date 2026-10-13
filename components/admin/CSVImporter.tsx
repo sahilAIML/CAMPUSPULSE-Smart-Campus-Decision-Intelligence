@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   Upload,
   Download,
@@ -11,22 +11,44 @@ import {
   RefreshCw,
   Table,
   Layers,
+  Users,
+  Search,
 } from 'lucide-react';
 import { ClayCard } from '../ui/ClayCard';
 import { ClayBadge } from '../ui/ClayBadge';
 import { ClayButton } from '../ui/ClayButton';
+import { ClayInput } from '../ui/ClayInput';
 import {
   CSVValidationReport,
   validateStudentCSV,
   commitCSVStudentImport,
 } from '@/lib/data/admin';
+import { StudentListItem, getSectionStudents } from '@/lib/data/students';
 
 export function CSVImporter() {
   const [report, setReport] = useState<CSVValidationReport | null>(null);
   const [csvRawText, setCsvRawText] = useState('');
   const [importing, setImporting] = useState(false);
   const [importSuccess, setImportSuccess] = useState<string | null>(null);
+  const [isCommitted, setIsCommitted] = useState(false);
+  const [committedRegNos, setCommittedRegNos] = useState<Set<string>>(new Set());
+  const [enrolledStudents, setEnrolledStudents] = useState<StudentListItem[]>([]);
+  const [studentSearch, setStudentSearch] = useState('');
+  const [sectionFilter, setSectionFilter] = useState<'all' | 'A' | 'B' | 'C'>('all');
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  // Load existing enrolled students
+  const loadEnrolledStudents = async () => {
+    const list = await getSectionStudents(sectionFilter);
+    setEnrolledStudents(list);
+  };
+
+  useEffect(() => {
+    loadEnrolledStudents();
+    const handleUpdate = () => loadEnrolledStudents();
+    window.addEventListener('campuspulse-data-updated', handleUpdate);
+    return () => window.removeEventListener('campuspulse-data-updated', handleUpdate);
+  }, [sectionFilter]);
 
   // Sample CSV with valid and flawed rows for testing
   const sampleCSV = [
@@ -54,6 +76,7 @@ export function CSVImporter() {
 
   const handleRunValidation = (text: string) => {
     setImportSuccess(null);
+    setIsCommitted(false);
     setCsvRawText(text);
     const rep = validateStudentCSV(text);
     setReport(rep);
@@ -77,8 +100,32 @@ export function CSVImporter() {
     setImporting(true);
     const res = await commitCSVStudentImport(report.valid_records);
     setImporting(false);
-    setImportSuccess(`Successfully ingested and synchronized ${res.imported_count} student profiles into the institutional cohort database.`);
+    setIsCommitted(true);
+
+    const committedSet = new Set(report.valid_records.map((r) => r.reg_no.toUpperCase()));
+    setCommittedRegNos(committedSet);
+
+    const names = report.valid_records.map((r) => `${r.full_name} (${r.reg_no})`).join(', ');
+    setImportSuccess(
+      `✓ Successfully committed ${res.imported_count} student profiles: ${names}. All profiles have been synchronized into the institutional students list below.`
+    );
+
+    // Refresh enrolled students cohort immediately
+    const updated = await getSectionStudents(sectionFilter);
+    setEnrolledStudents(updated);
   };
+
+  const filteredEnrolledStudents = enrolledStudents.filter((stu) => {
+    if (studentSearch.trim()) {
+      const q = studentSearch.toLowerCase();
+      return (
+        stu.full_name.toLowerCase().includes(q) ||
+        stu.reg_no.toLowerCase().includes(q) ||
+        stu.section_name.toLowerCase().includes(q)
+      );
+    }
+    return true;
+  });
 
   return (
     <div className="w-full space-y-6">
@@ -91,11 +138,11 @@ export function CSVImporter() {
             </ClayBadge>
             <ClayBadge variant="indigo" size="sm">Schema Zod Verification</ClayBadge>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold font-heading text-[var(--clay-text)] tracking-tight">
+          <h2 className="text-2xl sm:text-3xl font-extrabold font-heading text-white tracking-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.95)]">
             CSV Cohort Importer & Pre-Ingestion Validator
           </h2>
-          <p className="text-xs sm:text-sm text-[var(--clay-muted)]">
-            Audited bulk telemetry ingestion with automated row-level constraint checks, deduplication, and anomaly reporting.
+          <p className="text-xs sm:text-sm text-white/95 font-medium drop-shadow-[0_1px_6px_rgba(0,0,0,0.9)]">
+            Audited bulk telemetry ingestion with automated row-level constraint checks, deduplication, and cohort synchronization.
           </p>
         </div>
 
@@ -122,7 +169,7 @@ export function CSVImporter() {
 
       {importSuccess && (
         <div className="p-4 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-700 dark:text-emerald-400 text-xs font-bold flex items-center gap-2.5 animate-in fade-in duration-200">
-          <CheckCircle2 className="h-5 w-5 flex-shrink-0" />
+          <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-emerald-500" />
           <span>{importSuccess}</span>
         </div>
       )}
@@ -232,13 +279,22 @@ export function CSVImporter() {
                 </div>
 
                 <ClayButton
-                  variant="coral"
+                  variant={isCommitted ? 'teal' : 'coral'}
                   size="md"
                   onClick={handleCommit}
-                  disabled={importing}
+                  disabled={importing || isCommitted}
                 >
-                  <ShieldCheck className="h-4 w-4" />
-                  <span>{importing ? 'Committing...' : `Commit ${report.valid_rows_count} Valid Profiles`}</span>
+                  {isCommitted ? (
+                    <>
+                      <CheckCircle2 className="h-4 w-4 text-emerald-300" />
+                      <span>Committed & Added to Students List ({report.valid_rows_count})</span>
+                    </>
+                  ) : (
+                    <>
+                      <ShieldCheck className="h-4 w-4" />
+                      <span>{importing ? 'Committing...' : `Commit ${report.valid_rows_count} Valid Profiles`}</span>
+                    </>
+                  )}
                 </ClayButton>
               </div>
 
@@ -253,17 +309,30 @@ export function CSVImporter() {
                       <th className="py-2 px-3">CGPA</th>
                       <th className="py-2 px-3">Attendance</th>
                       <th className="py-2 px-3">Backlogs</th>
+                      <th className="py-2 px-3 text-right">Status</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[var(--clay-border)]">
-                    {report.valid_records.slice(0, 5).map((rec, i) => (
-                      <tr key={i}>
+                    {report.valid_records.map((rec, i) => (
+                      <tr key={i} className={isCommitted ? 'bg-emerald-500/5' : ''}>
                         <td className="py-2 px-3 font-mono font-bold text-[var(--clay-text)]">{rec.reg_no}</td>
                         <td className="py-2 px-3 font-bold">{rec.full_name}</td>
                         <td className="py-2 px-3">{rec.section}</td>
                         <td className="py-2 px-3 tabular-nums">{rec.cgpa}</td>
-                        <td className="py-2 px-3 tabular-nums text-emerald-600">{rec.attendance_pct}%</td>
+                        <td className="py-2 px-3 tabular-nums text-emerald-600 font-bold">{rec.attendance_pct}%</td>
                         <td className="py-2 px-3 tabular-nums">{rec.backlogs}</td>
+                        <td className="py-2 px-3 text-right">
+                          {isCommitted ? (
+                            <span className="inline-flex items-center gap-1 text-[11px] font-extrabold text-emerald-600">
+                              <CheckCircle2 className="h-3 w-3" />
+                              <span>Enrolled</span>
+                            </span>
+                          ) : (
+                            <span className="text-[11px] font-bold text-[#FF7A59]">
+                              Ready
+                            </span>
+                          )}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -273,6 +342,159 @@ export function CSVImporter() {
           )}
         </div>
       )}
+
+      {/* Live Synchronized Students List */}
+      <ClayCard className="p-5 sm:p-6 space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[var(--clay-border)]">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <Users className="h-5 w-5 text-[#5B6CFF]" />
+              <h3 className="font-heading font-extrabold text-lg text-[var(--clay-text)]">
+                Institutional Students List ({enrolledStudents.length} Profiles)
+              </h3>
+            </div>
+            <p className="text-xs text-[var(--clay-muted)]">
+              All active cohort student records. Newly committed CSV profiles are highlighted with a green ingestion badge.
+            </p>
+          </div>
+
+          {/* Section Filter */}
+          <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-[var(--clay-pressed)] border border-[var(--clay-border)]">
+            {(['all', 'A', 'B', 'C'] as const).map((sec) => (
+              <button
+                key={sec}
+                type="button"
+                onClick={() => setSectionFilter(sec)}
+                className={`px-3 py-1.5 rounded-xl font-heading font-bold text-xs transition-all ${
+                  sectionFilter === sec
+                    ? 'bg-[var(--clay-card)] text-[#FF7A59] shadow-[var(--shadow-clay-btn)]'
+                    : 'text-[var(--clay-muted)] hover:text-[var(--clay-text)]'
+                }`}
+              >
+                {sec === 'all' ? 'All Sections' : `Sec ${sec}`}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Search Bar */}
+        <div className="w-full sm:w-80">
+          <ClayInput
+            placeholder="Search students by name, reg no..."
+            icon={<Search className="h-3.5 w-3.5" />}
+            value={studentSearch}
+            onChange={(e) => setStudentSearch(e.target.value)}
+          />
+        </div>
+
+        {/* Enrolled Students Table */}
+        <div className="overflow-x-auto max-h-96 rounded-2xl border border-[var(--clay-border)]">
+          <table className="w-full text-left text-xs" aria-label="Enrolled Students Roster">
+            <thead className="bg-[var(--clay-pressed)] text-[var(--clay-muted)] font-heading font-extrabold uppercase sticky top-0 z-10 border-b border-[var(--clay-border)]">
+              <tr>
+                <th className="py-2.5 px-3">Student Name</th>
+                <th className="py-2.5 px-3">Reg No</th>
+                <th className="py-2.5 px-3">Section</th>
+                <th className="py-2.5 px-3">CGPA</th>
+                <th className="py-2.5 px-3">Attendance</th>
+                <th className="py-2.5 px-3">Backlogs</th>
+                <th className="py-2.5 px-3">Success Score</th>
+                <th className="py-2.5 px-3 text-right">Status</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-[var(--clay-border)] font-medium">
+              {filteredEnrolledStudents.length === 0 ? (
+                <tr>
+                  <td colSpan={8} className="py-8 text-center text-[var(--clay-muted)] font-bold">
+                    No student records match the search filter.
+                  </td>
+                </tr>
+              ) : (
+                filteredEnrolledStudents.map((stu) => {
+                  const isNewlyCommitted = committedRegNos.has(stu.reg_no.toUpperCase());
+                  return (
+                    <tr
+                      key={stu.student_id}
+                      className={`hover:bg-[var(--clay-pressed)]/60 transition-colors ${
+                        isNewlyCommitted ? 'bg-emerald-500/10' : ''
+                      }`}
+                    >
+                      <td className="py-2.5 px-3">
+                        <div className="flex items-center gap-2">
+                          <span className="font-heading font-extrabold text-xs text-[var(--clay-text)]">
+                            {stu.full_name}
+                          </span>
+                          {isNewlyCommitted && (
+                            <span className="px-1.5 py-0.5 rounded text-[10px] bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 font-extrabold border border-emerald-500/30">
+                              ✓ Newly Ingested
+                            </span>
+                          )}
+                        </div>
+                      </td>
+
+                      <td className="py-2.5 px-3 font-mono font-bold text-[var(--clay-text)]">
+                        {stu.reg_no}
+                      </td>
+
+                      <td className="py-2.5 px-3 font-bold text-[var(--clay-text)]">
+                        {stu.section_name}
+                      </td>
+
+                      <td className="py-2.5 px-3 font-bold tabular-nums">
+                        <span
+                          className={
+                            stu.cgpa >= 8.0
+                              ? 'text-emerald-600'
+                              : stu.cgpa >= 6.5
+                              ? 'text-amber-600'
+                              : 'text-rose-600'
+                          }
+                        >
+                          {stu.cgpa.toFixed(2)}
+                        </span>
+                      </td>
+
+                      <td className="py-2.5 px-3 font-bold tabular-nums">
+                        <span
+                          className={
+                            stu.attendance_pct >= 75
+                              ? 'text-emerald-600'
+                              : stu.attendance_pct >= 65
+                              ? 'text-amber-600'
+                              : 'text-rose-600'
+                          }
+                        >
+                          {stu.attendance_pct}%
+                        </span>
+                      </td>
+
+                      <td className="py-2.5 px-3 font-bold tabular-nums">
+                        {stu.backlogs > 0 ? (
+                          <span className="text-rose-600 font-extrabold">{stu.backlogs}</span>
+                        ) : (
+                          <span className="text-emerald-600">0</span>
+                        )}
+                      </td>
+
+                      <td className="py-2.5 px-3 font-heading font-black tabular-nums">
+                        {stu.success_score}
+                        <span className="text-[10px] text-[var(--clay-muted)] font-normal ml-1">/ 100</span>
+                      </td>
+
+                      <td className="py-2.5 px-3 text-right">
+                        <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600">
+                          <CheckCircle2 className="h-3 w-3" />
+                          <span>Active</span>
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
+      </ClayCard>
     </div>
   );
 }

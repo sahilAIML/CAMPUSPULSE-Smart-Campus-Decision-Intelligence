@@ -213,11 +213,11 @@ export function PriorityTable({
             <ClayBadge variant="coral" icon={<ShieldAlert className="h-3.5 w-3.5" />}>
               Priority Watchlist
             </ClayBadge>
-            <span className="text-xs font-bold text-[var(--clay-muted)]">
+            <span className="text-xs font-bold text-white/95 drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
               Showing {sorted.length} students
             </span>
           </div>
-          <h2 className="text-xl sm:text-2xl font-extrabold font-heading text-[var(--clay-text)] tracking-tight">
+          <h2 className="text-xl sm:text-2xl font-extrabold font-heading text-white tracking-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.95)]">
             Students Needing Attention
           </h2>
         </div>
@@ -241,13 +241,13 @@ export function PriorityTable({
 
       {/* Active Segment Cross-Filter Indicator */}
       {segmentFilter && (
-        <div className="flex items-center gap-2 mb-3.5 bg-[#5B6CFF]/15 border border-[#5B6CFF]/30 px-3.5 py-1.5 rounded-2xl w-fit">
-          <span className="text-xs font-heading font-extrabold text-[#5B6CFF]">
-            Segment Filter: <span className="underline">{segmentFilter}</span>
+        <div className="flex items-center gap-2 mb-3.5 bg-[#5B6CFF]/20 border border-[#5B6CFF]/40 px-3.5 py-1.5 rounded-2xl w-fit">
+          <span className="text-xs font-heading font-extrabold text-white drop-shadow">
+            Segment Filter: <span className="underline text-[#5B6CFF]">{segmentFilter}</span>
           </span>
           <button
             onClick={onClearSegmentFilter}
-            className="p-1 hover:bg-[#5B6CFF]/20 rounded-xl text-[#5B6CFF] transition-colors"
+            className="p-1 hover:bg-[#5B6CFF]/30 rounded-xl text-white transition-colors"
             title="Clear segment filter"
           >
             <X className="h-3.5 w-3.5" />
@@ -258,43 +258,43 @@ export function PriorityTable({
       {/* Filter Chips & Inline Search */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mb-5">
         {/* Filter Chips */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-2 sm:pb-0 scrollbar-none">
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-2 sm:pb-0 scrollbar-none bg-black/35 backdrop-blur-md border border-white/20 shadow-sm p-1 rounded-2xl">
           <button
             onClick={() => setFilterMode('all')}
-            className={`px-3 py-1.5 rounded-xl font-heading font-bold text-xs transition-all flex-shrink-0 min-h-[38px] ${
+            className={`px-3 py-1.5 rounded-xl font-heading text-xs transition-all flex-shrink-0 min-h-[38px] ${
               filterMode === 'all'
-                ? 'bg-[#FF7A59] text-white shadow-[var(--shadow-clay-coral)]'
-                : 'bg-[var(--clay-card)] text-[var(--clay-text)] shadow-[var(--shadow-clay-btn)]'
+                ? 'bg-[#FF7A59] text-white shadow-[var(--shadow-clay-coral)] font-extrabold'
+                : 'text-white/90 hover:text-white hover:bg-white/10 font-bold'
             }`}
           >
             All ({students.length})
           </button>
           <button
             onClick={() => setFilterMode('at_risk')}
-            className={`px-3 py-1.5 rounded-xl font-heading font-bold text-xs transition-all flex-shrink-0 min-h-[38px] ${
+            className={`px-3 py-1.5 rounded-xl font-heading text-xs transition-all flex-shrink-0 min-h-[38px] ${
               filterMode === 'at_risk'
-                ? 'bg-rose-600 text-white shadow-md'
-                : 'bg-[var(--clay-card)] text-[var(--clay-text)] shadow-[var(--shadow-clay-btn)]'
+                ? 'bg-rose-600 text-white shadow-md font-extrabold'
+                : 'text-white/90 hover:text-white hover:bg-white/10 font-bold'
             }`}
           >
             High & Critical Risk
           </button>
           <button
             onClick={() => setFilterMode('att_low')}
-            className={`px-3 py-1.5 rounded-xl font-heading font-bold text-xs transition-all flex-shrink-0 min-h-[38px] ${
+            className={`px-3 py-1.5 rounded-xl font-heading text-xs transition-all flex-shrink-0 min-h-[38px] ${
               filterMode === 'att_low'
-                ? 'bg-[#FFC857] text-gray-900 shadow-md'
-                : 'bg-[var(--clay-card)] text-[var(--clay-text)] shadow-[var(--shadow-clay-btn)]'
+                ? 'bg-[#FFC857] text-gray-900 shadow-md font-extrabold'
+                : 'text-white/90 hover:text-white hover:bg-white/10 font-bold'
             }`}
           >
             Attendance &lt; 75%
           </button>
           <button
             onClick={() => setFilterMode('backlogs')}
-            className={`px-3 py-1.5 rounded-xl font-heading font-bold text-xs transition-all flex-shrink-0 min-h-[38px] ${
+            className={`px-3 py-1.5 rounded-xl font-heading text-xs transition-all flex-shrink-0 min-h-[38px] ${
               filterMode === 'backlogs'
-                ? 'bg-[#5B6CFF] text-white shadow-md'
-                : 'bg-[var(--clay-card)] text-[var(--clay-text)] shadow-[var(--shadow-clay-btn)]'
+                ? 'bg-[#5B6CFF] text-white shadow-md font-extrabold'
+                : 'text-white/90 hover:text-white hover:bg-white/10 font-bold'
             }`}
           >
             Has Backlogs
@@ -620,7 +620,7 @@ export function PriorityTable({
                     fullWidth
                     onClick={() => onSelectStudent(student)}
                   >
-                    <span>Open Detailed Telemetry & Assign Intervention</span>
+                    <span>Open Detailed Telemetry & Profile Dossier</span>
                     <ChevronRight className="h-4 w-4" />
                   </ClayButton>
                 </div>

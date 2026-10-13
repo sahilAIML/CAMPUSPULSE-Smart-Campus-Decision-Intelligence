@@ -120,10 +120,10 @@ export function FacultyAnalyticsGrid({
     <section className="w-full mb-12">
       <div className="flex items-center justify-between mb-5">
         <div>
-          <h2 className="text-xl sm:text-2xl font-extrabold font-heading text-[var(--clay-text)] tracking-tight">
+          <h2 className="text-xl sm:text-2xl font-extrabold font-heading text-white tracking-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.95)]">
             Cohort Decision Intelligence
           </h2>
-          <p className="text-xs sm:text-sm text-[var(--clay-muted)]">
+          <p className="text-xs sm:text-sm text-white/95 font-medium drop-shadow-[0_1px_6px_rgba(0,0,0,0.9)]">
             Correlated distributions, segment breakdown, and early warning risk telemetry.
           </p>
         </div>

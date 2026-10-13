@@ -295,6 +295,34 @@ export function addStudentToCohort(student: RawStudentMetrics) {
   } else {
     cohort.unshift(student);
   }
+  if (typeof window !== 'undefined') {
+    try {
+      const saved = JSON.parse(localStorage.getItem('campuspulse_custom_students') || '[]');
+      const filtered = saved.filter((s: RawStudentMetrics) => s.reg_no.toUpperCase() !== student.reg_no.toUpperCase());
+      localStorage.setItem('campuspulse_custom_students', JSON.stringify([student, ...filtered]));
+    } catch {}
+  }
+}
+
+export function addStudentsToCohort(students: RawStudentMetrics[]) {
+  const cohort = getCohort();
+  for (const student of students) {
+    const existingIdx = cohort.findIndex((s) => s.reg_no.toUpperCase() === student.reg_no.toUpperCase());
+    if (existingIdx >= 0) {
+      cohort[existingIdx] = student;
+    } else {
+      cohort.unshift(student);
+    }
+  }
+  if (typeof window !== 'undefined') {
+    try {
+      const saved = JSON.parse(localStorage.getItem('campuspulse_custom_students') || '[]');
+      const studentMap = new Map<string, RawStudentMetrics>();
+      saved.forEach((s: RawStudentMetrics) => studentMap.set(s.reg_no.toUpperCase(), s));
+      students.forEach((s: RawStudentMetrics) => studentMap.set(s.reg_no.toUpperCase(), s));
+      localStorage.setItem('campuspulse_custom_students', JSON.stringify(Array.from(studentMap.values())));
+    } catch {}
+  }
 }
 
 // Active in-memory interventions store for mock mode
@@ -369,10 +397,17 @@ export async function getSectionStudents(
   const scoredMap = new Map(scoredResults.map((r) => [r.student_id, r]));
 
   let list: StudentListItem[] = cohortToScore.map((raw) => {
-    const analysis = scoredMap.get(raw.student_id)!;
+    const analysis = scoredMap.get(raw.student_id);
     const existingInterventions = mockInterventionsStore.get(raw.reg_no) ?? [];
 
     const sectionName = raw.section_id === 'sec-a' ? 'Section A' : raw.section_id === 'sec-b' ? 'Section B' : 'Section C';
+
+    const safeSuccessScore = analysis ? analysis.scores.total : Math.round((raw.cgpa / 10.0) * 85);
+    const safeRiskProb = analysis ? analysis.risk.probability : (raw.attendance_pct < 75 ? 0.65 : 0.15);
+    const safeRiskLevel = analysis ? analysis.risk.level : (raw.attendance_pct < 65 ? 'critical' : raw.attendance_pct < 75 ? 'high' : 'low');
+    const safeAcademicRisk = analysis ? analysis.risk.academic_risk : raw.cgpa < 6.5;
+    const safePlacementRisk = analysis ? analysis.risk.placement_risk : raw.cgpa < 6.0;
+    const safeSegment = analysis ? analysis.segment.segment : (raw.cgpa >= 8.5 ? 'High Achiever' : 'Consistent Performer');
 
     return {
       student_id: raw.student_id,
@@ -384,12 +419,12 @@ export async function getSectionStudents(
       backlogs: raw.backlogs,
       attendance_pct: raw.attendance_pct,
       avg_cie_marks: raw.avg_cie_marks ?? 7.0,
-      success_score: analysis.scores.total,
-      risk_probability: analysis.risk.probability,
-      risk_level: analysis.risk.level,
-      academic_risk: analysis.risk.academic_risk,
-      placement_risk: analysis.risk.placement_risk,
-      segment: analysis.segment.segment,
+      success_score: safeSuccessScore,
+      risk_probability: safeRiskProb,
+      risk_level: safeRiskLevel,
+      academic_risk: safeAcademicRisk,
+      placement_risk: safePlacementRisk,
+      segment: safeSegment,
       active_interventions_count: existingInterventions.filter((i) => i.status !== 'resolved').length,
       coding_score: raw.coding ?? 50,
       avatar_url: `https://images.unsplash.com/photo-${

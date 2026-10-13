@@ -122,10 +122,10 @@ export function FacultyDirectory() {
               Department of Computer Science & Engineering
             </ClayBadge>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-heading font-extrabold text-[var(--clay-text)] tracking-tight">
+          <h2 className="text-2xl sm:text-3xl font-heading font-extrabold text-white tracking-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.95)]">
             Faculty Directory & Academic Dossiers
           </h2>
-          <p className="text-xs sm:text-sm text-[var(--clay-muted)] font-medium mt-1">
+          <p className="text-xs sm:text-sm text-white/95 font-medium mt-1 drop-shadow-[0_1px_6px_rgba(0,0,0,0.9)]">
             Browse complete faculty records from the official Vignan CSE dataset. Inspect designations, research specializations, official institutional profile links, and workloads.
           </p>
         </div>

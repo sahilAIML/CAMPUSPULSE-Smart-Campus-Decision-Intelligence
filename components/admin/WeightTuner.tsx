@@ -121,10 +121,10 @@ export function WeightTuner() {
               Sum: {Math.round(totalSum)}% / 100%
             </ClayBadge>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold font-heading text-[var(--clay-text)] tracking-tight">
+          <h2 className="text-2xl sm:text-3xl font-extrabold font-heading text-white tracking-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.95)]">
             Score Weight Tuning & Live Recompute
           </h2>
-          <p className="text-xs sm:text-sm text-[var(--clay-muted)]">
+          <p className="text-xs sm:text-sm text-white/95 font-medium drop-shadow-[0_1px_6px_rgba(0,0,0,0.9)]">
             Adjust multi-source telemetry weights. Live algorithms simulate campus-wide impact across all 120 students in real time.
           </p>
         </div>

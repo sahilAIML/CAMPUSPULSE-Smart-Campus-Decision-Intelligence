@@ -23,6 +23,7 @@ import { AdminMobileNav } from '@/components/admin/AdminMobileNav';
 import { InstitutionalDashboard } from '@/components/admin/InstitutionalDashboard';
 import { ProfileLookup } from '@/components/admin/ProfileLookup';
 import { FacultyDirectory } from '@/components/admin/FacultyDirectory';
+import { StudentsDirectory } from '@/components/admin/StudentsDirectory';
 import { WeightTuner } from '@/components/admin/WeightTuner';
 import { CSVImporter } from '@/components/admin/CSVImporter';
 import { UserManagement } from '@/components/admin/UserManagement';
@@ -37,7 +38,8 @@ import { AuthUser } from '@/lib/data/types';
 
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<AdminTab>('dashboard');
-  const [currentUser, setCurrentUser] = useState<AuthUser | null>(() => getSessionUser());
+  const [selectedLookupId, setSelectedLookupId] = useState<string>('241FA18067');
+  const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
   const [authChecked, setAuthChecked] = useState(false);
   const [addModalOpen, setAddModalOpen] = useState(false);
 
@@ -155,6 +157,7 @@ export default function AdminPage() {
               <span className="text-xs font-heading font-extrabold text-[#FF7A59] bg-[#FF7A59]/10 px-2.5 py-0.5 rounded-xl border border-[#FF7A59]/20">
                 {activeTab === 'dashboard' && 'Institutional Dashboard & Heatmap'}
                 {activeTab === 'faculty' && 'Faculty Directory (123 CSE Profiles)'}
+                {activeTab === 'students' && 'Students List & Institutional Cohort'}
                 {activeTab === 'lookup' && 'Profile Lookup (Faculty & Student)'}
                 {activeTab === 'weights' && 'Score Weight Tuning & Recomputation'}
                 {activeTab === 'csv' && 'CSV Import Engine & Validation Report'}
@@ -175,7 +178,15 @@ export default function AdminPage() {
         <section className="flex-1 w-full space-y-6">
           {activeTab === 'dashboard' && <InstitutionalDashboard />}
           {activeTab === 'faculty' && <FacultyDirectory />}
-          {activeTab === 'lookup' && <ProfileLookup />}
+          {activeTab === 'students' && (
+            <StudentsDirectory
+              onSelectStudent={(reg) => {
+                setSelectedLookupId(reg);
+                setActiveTab('lookup');
+              }}
+            />
+          )}
+          {activeTab === 'lookup' && <ProfileLookup initialId={selectedLookupId} />}
           {activeTab === 'weights' && <WeightTuner />}
           {activeTab === 'csv' && <CSVImporter />}
           {activeTab === 'users' && <UserManagement />}

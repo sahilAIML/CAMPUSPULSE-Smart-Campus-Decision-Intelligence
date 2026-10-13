@@ -264,10 +264,10 @@ export function ExamResultsView({
               Tie-Aware Standard Competition Rank
             </ClayBadge>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold font-heading text-[var(--clay-text)] tracking-tight">
+          <h2 className="text-2xl sm:text-3xl font-extrabold font-heading text-white tracking-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.95)]">
             Cohort Exam Results Intelligence
           </h2>
-          <p className="text-xs sm:text-sm text-[var(--clay-muted)]">
+          <p className="text-xs sm:text-sm text-white/95 font-medium drop-shadow-[0_1px_6px_rgba(0,0,0,0.9)]">
             Start or stop examinations, track submission counts, appoint student marks, and view weak topic diagnostics.
           </p>
         </div>

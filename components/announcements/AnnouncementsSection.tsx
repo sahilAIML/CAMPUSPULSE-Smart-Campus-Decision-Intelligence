@@ -104,12 +104,12 @@ export function AnnouncementsSection({
               <ClayBadge variant="teal" icon={<Megaphone className="h-3.5 w-3.5" />}>
                 Official Bulletins
               </ClayBadge>
-              <span className="text-xs font-bold text-[var(--clay-muted)]">Verified Faculty Desk</span>
+              <span className="text-xs font-bold text-white/95 drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)]">Verified Faculty Desk</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold font-heading text-[var(--clay-text)] tracking-tight">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold font-heading text-white tracking-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">
               Campus Announcements
             </h2>
-            <p className="text-sm sm:text-base text-[var(--clay-muted)] mt-1 max-w-xl">
+            <p className="text-sm sm:text-base text-white/95 mt-1 max-w-xl font-medium drop-shadow-[0_1px_6px_rgba(0,0,0,0.85)]">
               Real-time schedule adjustments, examinations, remedial sessions, and academic circulars.
             </p>
           </div>
@@ -127,7 +127,7 @@ export function AnnouncementsSection({
 
         {/* Filter Chips Bar */}
         <div className="flex items-center gap-2.5 overflow-x-auto pb-4 mb-6 scrollbar-none">
-          <div className="flex items-center gap-2 text-xs font-heading font-extrabold text-[var(--clay-muted)] uppercase pl-1 pr-2 flex-shrink-0">
+          <div className="flex items-center gap-2 text-xs font-heading font-extrabold text-white uppercase pl-1 pr-2 flex-shrink-0 drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)]">
             <Filter className="h-3.5 w-3.5" />
             <span>Category:</span>
           </div>

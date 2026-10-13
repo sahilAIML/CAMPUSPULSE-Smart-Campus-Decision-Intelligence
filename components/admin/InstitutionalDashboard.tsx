@@ -82,10 +82,10 @@ export function InstitutionalDashboard() {
       <section className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="font-heading font-extrabold text-xl text-[var(--clay-text)] tracking-tight">
+            <h3 className="font-heading font-extrabold text-xl text-white tracking-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]">
               Cross-Departmental Performance Matrix
             </h3>
-            <p className="text-xs text-[var(--clay-muted)]">
+            <p className="text-xs text-white/95 font-medium drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)]">
               Institutional comparison across Academic Success, Placement Rates, and At-Risk Proportions.
             </p>
           </div>
@@ -140,14 +140,14 @@ export function InstitutionalDashboard() {
       <section className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="font-heading font-extrabold text-xl text-[var(--clay-text)] tracking-tight">
+            <h3 className="font-heading font-extrabold text-xl text-white tracking-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]">
               Risk Heatmap: Section × 7 Key Success Indicators
             </h3>
-            <p className="text-xs text-[var(--clay-muted)]">
+            <p className="text-xs text-white/95 font-medium drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)]">
               Multi-dimensional cross-section diagnostic matrix revealing targeted intervention areas.
             </p>
           </div>
-          <div className="flex items-center gap-2 text-xs font-bold">
+          <div className="flex items-center gap-2 text-xs font-bold text-white drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)]">
             <span className="flex items-center gap-1"><span className="h-2.5 w-2.5 rounded-full bg-emerald-500" /> ≥75% Safe</span>
             <span className="flex items-center gap-1"><span className="h-2.5 w-2.5 rounded-full bg-amber-500" /> 60-74% Watch</span>
             <span className="flex items-center gap-1"><span className="h-2.5 w-2.5 rounded-full bg-rose-500" /> &lt;60% Deficit</span>

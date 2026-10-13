@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Search,
   User,
@@ -31,9 +31,13 @@ import {
   lookupStudentProfile,
 } from '@/lib/data/admin';
 
-export function ProfileLookup() {
+interface ProfileLookupProps {
+  initialId?: string;
+}
+
+export function ProfileLookup({ initialId }: ProfileLookupProps = {}) {
   const [roleMode, setRoleMode] = useState<'student' | 'faculty'>('student');
-  const [searchId, setSearchId] = useState('241FA18067');
+  const [searchId, setSearchId] = useState(initialId || '241FA18067');
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
 
@@ -41,24 +45,38 @@ export function ProfileLookup() {
   const [studentResult, setStudentResult] = useState<StudentAdminProfile | null>(null);
   const [facultyResult, setFacultyResult] = useState<FacultyProfile | null>(null);
 
-  const handleLookup = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    if (!searchId.trim()) return;
+  const handleLookup = async (idToSearch?: string, mode?: 'student' | 'faculty') => {
+    const targetId = (idToSearch || searchId).trim();
+    const targetMode = mode || roleMode;
+    if (!targetId) return;
 
     setLoading(true);
     setSearched(true);
 
-    if (roleMode === 'student') {
-      const stu = await lookupStudentProfile(searchId);
+    if (targetMode === 'student') {
+      const stu = await lookupStudentProfile(targetId);
       setStudentResult(stu);
       setFacultyResult(null);
     } else {
-      const fac = await lookupFacultyProfile(searchId);
+      const fac = await lookupFacultyProfile(targetId);
       setFacultyResult(fac);
       setStudentResult(null);
     }
     setLoading(false);
   };
+
+  useEffect(() => {
+    if (initialId) {
+      setSearchId(initialId);
+      setRoleMode('student');
+      handleLookup(initialId, 'student');
+    }
+    const handleDataUpdate = () => {
+      if (searchId) handleLookup(searchId, roleMode);
+    };
+    window.addEventListener('campuspulse-data-updated', handleDataUpdate);
+    return () => window.removeEventListener('campuspulse-data-updated', handleDataUpdate);
+  }, [initialId]);
 
   const handleQuickSelect = (id: string, mode: 'student' | 'faculty') => {
     setRoleMode(mode);
@@ -128,7 +146,7 @@ export function ProfileLookup() {
         </div>
 
         {/* Input & Submit */}
-        <form onSubmit={handleLookup} className="flex flex-col sm:flex-row items-center gap-3">
+        <form onSubmit={(e) => { e.preventDefault(); handleLookup(); }} className="flex flex-col sm:flex-row items-center gap-3">
           <div className="w-full flex-1">
             <ClayInput
               placeholder={roleMode === 'student' ? 'Enter Reg No (e.g. 241FA18067)...' : 'Enter Faculty ID (e.g. CSE_001) or Name...'}
@@ -283,9 +301,15 @@ export function ProfileLookup() {
 
               {/* External Professional & Coding Links */}
               <div className="space-y-2 pt-2 border-t border-[var(--clay-border)]">
-                <span className="text-xs font-heading font-extrabold text-[var(--clay-muted)] uppercase tracking-wider block">
-                  Coding Profiles & Professional Networks
-                </span>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-heading font-extrabold text-[var(--clay-muted)] uppercase tracking-wider block">
+                    Coding Profiles & Professional Networks
+                  </span>
+                  <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/15 text-emerald-600 border border-emerald-500/30 flex items-center gap-1">
+                    <CheckCircle2 className="h-3 w-3" />
+                    <span>Live Synced with Student Dashboard</span>
+                  </span>
+                </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                   <a
                     href={studentResult.leetcode_url}

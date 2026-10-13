@@ -31,12 +31,12 @@ interface ChatMessage {
 }
 
 const QUICK_PROMPTS = [
-  { label: '🎓 Student Portal Guide', prompt: 'Tell me about the Student Portal and how to view or improve my Success Score?' },
-  { label: '👩‍🏫 Faculty Exam & Marks', prompt: 'How do faculty start or stop exams and appoint marks on the leaderboard?' },
-  { label: '🔑 Login Credentials', prompt: 'What are the login emails and passwords for students, faculty, and admin?' },
-  { label: '📊 Success Score Formula', prompt: 'How is the Student Success Score calculated across the 7 indicators?' },
-  { label: '🏢 Placements & Recruiters', prompt: 'Which companies hire from here and what is the placement record?' },
-  { label: '📍 Where do I go?', prompt: 'I am new to this website. Give me a full roadmap and navigation guide.' },
+  { label: '🔐 How to Log In', prompt: 'What are the step-by-step instructions and credentials to log into the portals?' },
+  { label: '🎓 Student: Boost Score', prompt: 'What are the steps for a student to check and improve their Success Score?' },
+  { label: '👩‍🏫 Faculty: Exam Lifecycle', prompt: 'What are the step-by-step instructions for faculty to start/stop exams and appoint marks?' },
+  { label: '🏛️ Admin: CSV Import & Commit', prompt: 'How does an admin upload, preview, and commit new student CSV records?' },
+  { label: '🔑 Authorized Credentials', prompt: 'What are the authorized test credentials and login process?' },
+  { label: '⚖️ Score Weight Tuning', prompt: 'What is the procedure for administrators to calibrate institutional score weights?' },
 ];
 
 export default function CampusPulseChatbot() {
@@ -55,16 +55,18 @@ export default function CampusPulseChatbot() {
       role: 'assistant',
       content: `👋 **Welcome to CampusPulse!**
 
-I am **PulseBot**, your intelligent Campus AI Guide trained on everything across this platform.
+I am **PulseBot**, your institutional process assistant. I provide **detailed step-by-step instructions and guides** for every feature and workflow across our platform.
 
-**How I can help you right now:**
-• 🗺️ **Website Navigation**: Need to reach a specific page? Ask me and I will take you there instantly.
-• 🎓 **Student Success**: Learn how the 0–100 Success Score is calculated, how to view sensitivity improvement roadmaps, and how to take timed exams.
-• 👩‍🏫 **Faculty Tools**: Learn how to monitor section cohorts, start & stop exams, review submission turnouts, and appoint leaderboard marks.
-• 🏛️ **Institutional Governance**: Explore department risk heatmaps, profile dossiers, and score weight tuning.
-• 🔑 **Official Credentials**: Ask for any student, faculty, or admin access details.
+📌 **What I can guide you through:**
+• 🔐 **Login & Role Access**: Step-by-step instructions to authenticate to Student, Faculty, or Admin portals using verified credentials.
+• 🎓 **Student Success Score**: How to check your 7-indicator score breakdown, follow sensitivity improvement roadmaps, and take timed examinations.
+• 👩‍🏫 **Faculty Tools**: How to monitor cohort benchmarks, start & stop exams, review submission turnouts, and appoint leaderboard marks.
+• 🏛️ **Admin Governance**: Step-by-step process to upload and commit student CSV datasets, tune indicator weights, and audit institutional logs.
+• 💼 **Placements & Announcements**: How to explore recruitment metrics and circulars.
 
-Click any quick topic below or type your question!`,
+*(Security Notice: For campus security, direct portal links are restricted. All users must authenticate through the official [Sign In](/login) portal.)*
+
+Click any topic below or ask for instructions on any website process!`,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       provider: 'institutional-engine',
     },
@@ -158,7 +160,7 @@ Click any quick topic below or type your question!`,
       const botMessage: ChatMessage = {
         id: `bot-${Date.now()}`,
         role: 'assistant',
-        content: data.reply || "I'm here to help! Please ask any question about CampusPulse.",
+        content: data.reply || "I'm here to provide instructions for any process across CampusPulse. Please ask your question!",
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         provider: data.provider || 'institutional-engine',
       };
@@ -169,13 +171,15 @@ Click any quick topic below or type your question!`,
       const fallbackMsg: ChatMessage = {
         id: `bot-fallback-${Date.now()}`,
         role: 'assistant',
-        content: `I encountered an unexpected network hiccup, but here are the key links you can access right away:
-- [Student Portal](/student)
-- [Faculty Dashboard](/faculty)
-- [Admin Governance](/admin)
-- [Official Login](/login)
+        content: `### 🔐 Campus Access Process
+To access any protected portal (Student, Faculty, or Admin), follow these official steps:
 
-You can ask me anything about these portals!`,
+1. Click to open [Sign In](/login).
+2. Select your designated role tab (Student, Faculty, or Admin).
+3. Enter your verified institutional email and password (\`Password@123\`).
+4. Click **Sign In** to open your personal dashboard.
+
+Ask me for any process or step-by-step instructions across the platform!`,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         provider: 'fallback',
       };
@@ -193,6 +197,19 @@ You can ask me anything about these portals!`,
   };
 
   const navigateTo = (path: string) => {
+    // SECURITY POLICY: Do not allow direct bypass to protected portals. Route to login instead.
+    if (
+      path === '/admin' ||
+      path === '/faculty' ||
+      path === '/student' ||
+      path.startsWith('/admin') ||
+      path.startsWith('/faculty') ||
+      path.startsWith('/student')
+    ) {
+      router.push('/login');
+      return;
+    }
+
     if (path.startsWith('/#')) {
       const hash = path.replace('/', '');
       if (window.location.pathname === '/') {
@@ -239,14 +256,26 @@ You can ask me anything about these portals!`,
       <div className="space-y-2 text-sm leading-relaxed text-clay-text select-text">
         {parts.map((part, index) => {
           if (part.type === 'link' && part.url) {
-            const isInternal = part.url.startsWith('/') || part.url.startsWith('#');
+            // Guard against direct dashboard links in buttons
+            const isProtected =
+              part.url === '/admin' ||
+              part.url === '/faculty' ||
+              part.url === '/student' ||
+              part.url.startsWith('/admin') ||
+              part.url.startsWith('/faculty') ||
+              part.url.startsWith('/student');
+
+            const targetUrl = isProtected ? '/login' : part.url;
+            const buttonText = isProtected ? `Login to Access (${part.text})` : part.text;
+            const isInternal = targetUrl.startsWith('/') || targetUrl.startsWith('#');
+
             return (
               <button
                 key={index}
-                onClick={() => isInternal && part.url ? navigateTo(part.url) : window.open(part.url, '_blank')}
+                onClick={() => (isInternal ? navigateTo(targetUrl) : window.open(targetUrl, '_blank'))}
                 className="inline-flex items-center gap-1.5 px-3 py-1 my-1 mr-1.5 text-xs font-semibold text-teal-dark dark:text-teal bg-teal/10 hover:bg-teal/20 border border-teal/30 rounded-full transition-all duration-200 transform hover:scale-[1.03] active:scale-95 shadow-sm"
               >
-                <span>{part.text}</span>
+                <span>{buttonText}</span>
                 {isInternal ? <ArrowRight className="w-3 h-3" /> : <ExternalLink className="w-3 h-3" />}
               </button>
             );
@@ -362,7 +391,7 @@ You can ask me anything about these portals!`,
                     Online
                   </span>
                 </div>
-                <p className="text-[11px] text-clay-muted">Campus Guide & Instant Navigation</p>
+                <p className="text-[11px] text-clay-muted">Institutional Process & Steps Guide</p>
               </div>
             </div>
 
@@ -396,15 +425,15 @@ You can ask me anything about these portals!`,
                   <Key className="w-4 h-4 text-sun-dark dark:text-sun" />
                   <span className="text-xs font-bold text-clay-text">Google Gemini API Key</span>
                 </div>
-                <span className="text-[10px] text-clay-muted">Optional (Default Fallback Active)</span>
+                <span className="text-[10px] text-teal-dark font-medium">Supported</span>
               </div>
               <p className="text-[11px] text-clay-muted leading-relaxed">
-                Connect your personal Google Gemini API Key for deep conversational inference, or use the pre-trained built-in CampusPulse knowledge engine!
+                Connect your personal Google Gemini API Key (e.g. from Google AI Studio) for advanced natural conversational inference. If you don't enter one, PulseBot uses the built-in zero-downtime campus process knowledge engine!
               </p>
               <div className="flex gap-2">
                 <input
                   type="password"
-                  placeholder="Paste AI Studio Key: AIzaSy..."
+                  placeholder="Paste Gemini API Key: AIzaSy..."
                   value={tempApiKey}
                   onChange={(e) => setTempApiKey(e.target.value)}
                   className="flex-1 px-3 py-2 text-xs rounded-xl bg-[var(--clay-card)] border border-[var(--clay-border)] shadow-[var(--shadow-clay-input)] focus:outline-none focus:ring-1 focus:ring-teal text-clay-text"
@@ -515,7 +544,7 @@ You can ask me anything about these portals!`,
               <input
                 ref={inputRef}
                 type="text"
-                placeholder="Ask anything about CampusPulse, navigation..."
+                placeholder="Ask for instructions on any process, login steps, exams, scores..."
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
                 onKeyDown={handleKeyDown}

@@ -31,7 +31,7 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
-  themeColor: '#EEF1F6',
+  themeColor: '#FFFFFF',
 };
 
 export default function RootLayout({
@@ -47,18 +47,10 @@ export default function RootLayout({
             __html: `
               (function() {
                 try {
-                  var saved = localStorage.getItem('campuspulse_theme');
+                  localStorage.setItem('campuspulse_theme', 'white');
                   var root = document.documentElement;
-                  if (saved === 'white') {
-                    root.classList.remove('dark', 'theme-bw');
-                    root.classList.add('theme-white');
-                  } else if (saved === 'bw') {
-                    root.classList.add('dark', 'theme-bw');
-                    root.classList.remove('theme-white');
-                  } else {
-                    root.classList.add('dark');
-                    root.classList.remove('theme-bw', 'theme-white');
-                  }
+                  root.classList.remove('dark', 'theme-bw');
+                  root.classList.add('theme-white');
                 } catch (e) {}
               })();
             `,

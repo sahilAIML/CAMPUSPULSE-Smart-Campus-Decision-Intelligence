@@ -20,15 +20,15 @@ export function ClayBadge({
   const sizeClasses = size === 'sm' ? 'px-2.5 py-1 text-xs gap-1.5' : 'px-3.5 py-1.5 text-xs gap-2';
 
   const variantStyles = {
-    default: 'bg-[var(--clay-card)] text-[var(--clay-text)] border-[var(--clay-border)]',
-    coral: 'bg-[#FF7A59]/15 text-[#E05F3F] dark:text-[#FFA085] border-[#FF7A59]/30',
-    teal: 'bg-[#2EC4B6]/15 text-[#1D857B] dark:text-[#5CE6DA] border-[#2EC4B6]/30',
-    sun: 'bg-[#FFC857]/20 text-[#B8860B] dark:text-[#FFD782] border-[#FFC857]/40',
-    indigo: 'bg-[#5B6CFF]/15 text-[#4454E5] dark:text-[#8D9BFF] border-[#5B6CFF]/30',
-    'risk-low': 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border-emerald-500/30',
-    'risk-medium': 'bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/30',
-    'risk-high': 'bg-orange-500/15 text-orange-700 dark:text-orange-400 border-orange-500/30',
-    'risk-critical': 'bg-rose-500/15 text-rose-700 dark:text-rose-400 border-rose-500/30 font-extrabold',
+    default: 'bg-white/95 text-slate-800 border-white/80 shadow-sm',
+    coral: 'bg-white/95 text-[#E05F3F] border-[#FF7A59]/40 font-bold shadow-sm',
+    teal: 'bg-white/95 text-[#0E7490] border-[#2EC4B6]/40 font-bold shadow-sm',
+    sun: 'bg-white/95 text-[#B45309] border-[#FFC857]/50 font-bold shadow-sm',
+    indigo: 'bg-white/95 text-[#3730A3] border-[#5B6CFF]/40 font-bold shadow-sm',
+    'risk-low': 'bg-white/95 text-emerald-700 border-emerald-400/50 font-bold shadow-sm',
+    'risk-medium': 'bg-white/95 text-amber-700 border-amber-400/50 font-bold shadow-sm',
+    'risk-high': 'bg-white/95 text-orange-700 border-orange-400/50 font-bold shadow-sm',
+    'risk-critical': 'bg-white/95 text-rose-700 border-rose-400/50 font-extrabold shadow-sm',
   }[variant];
 
   return (

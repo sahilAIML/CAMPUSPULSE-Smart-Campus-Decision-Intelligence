@@ -91,10 +91,10 @@ export function UserManagement() {
               Role-Based Access Control (RBAC)
             </ClayBadge>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold font-heading text-[var(--clay-text)] tracking-tight">
+          <h2 className="text-2xl sm:text-3xl font-extrabold font-heading text-white tracking-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.95)]">
             User Management & Authorization
           </h2>
-          <p className="text-xs sm:text-sm text-[var(--clay-muted)]">
+          <p className="text-xs sm:text-sm text-white/95 font-medium drop-shadow-[0_1px_6px_rgba(0,0,0,0.9)]">
             Manage institutional identities, promote or reassign administrative privileges, and control platform access.
           </p>
         </div>

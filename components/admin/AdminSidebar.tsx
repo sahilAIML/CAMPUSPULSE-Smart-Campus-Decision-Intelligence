@@ -23,6 +23,7 @@ import { ThemeToggle } from '../ui/ThemeToggle';
 export type AdminTab =
   | 'dashboard'
   | 'faculty'
+  | 'students'
   | 'lookup'
   | 'weights'
   | 'csv'
@@ -52,6 +53,12 @@ export function AdminSidebar({
       label: 'Faculty Directory',
       icon: <GraduationCap className="h-5 w-5" />,
       badge: '123 Roster',
+    },
+    {
+      id: 'students',
+      label: 'Students List',
+      icon: <Users className="h-5 w-5" />,
+      badge: 'Cohort',
     },
     {
       id: 'lookup',
@@ -165,13 +172,6 @@ export function AdminSidebar({
 
       {/* Admin User Profile & Sign Out Footer */}
       <div className="pt-4 border-t border-[var(--clay-border)] flex flex-col gap-3">
-        {/* Black / White / B&W Theme Option */}
-        <div className="flex items-center justify-between px-1">
-          <span className="text-[10px] font-extrabold uppercase tracking-wider text-[var(--clay-muted)]">
-            Theme Mode:
-          </span>
-          <ThemeToggle size="sm" />
-        </div>
 
         <div className="flex items-center gap-3 px-2">
           <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-[#5B6CFF] to-[#3B4CD8] flex items-center justify-center text-white font-heading font-extrabold shadow-[var(--shadow-clay-btn)]">

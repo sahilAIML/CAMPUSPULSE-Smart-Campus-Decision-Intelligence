@@ -13,10 +13,11 @@ import {
   batchComputeStudentScores,
   computeSectionBenchmarks,
 } from '../analytics/engine';
-import { getSectionStudents, getStudentDetail, StudentDetail, addStudentToCohort } from './students';
+import { getSectionStudents, getStudentDetail, StudentDetail, addStudentToCohort, addStudentsToCohort } from './students';
 import { MOCK_ANNOUNCEMENTS, MOCK_PLACEMENTS } from './mock-store';
 import { Announcement, PlacementRecord } from './types';
 import vignanFacultyJson from './vignan_faculty.json';
+import { STUDENT_DOSSIERS, getSavedStudentProfileMap } from './student-portal';
 
 // ----------------------------------------------------------------------------
 // FACULTY PROFILES DATA (Vignan CSE Official Dataset - 123 Records)
@@ -269,14 +270,42 @@ export async function lookupStudentProfile(id: string): Promise<StudentAdminProf
   const detail = await getStudentDetail(cleanId);
   if (!detail) return null;
 
-  // Add coding and professional profiles (with realistic slugs)
+  // Default fallback URLs based on student name
   const slug = detail.full_name.toLowerCase().replace(/[^a-z0-9]/g, '');
+  let leetcode = `https://leetcode.com/u/${slug}_dev`;
+  let codechef = `https://www.codechef.com/users/${slug}_tech`;
+  let linkedin = `https://linkedin.com/in/${slug}-cse`;
+  let github = `https://github.com/${slug}`;
+  let fullName = detail.full_name;
+
+  // 1. Check in-memory STUDENT_DOSSIERS
+  if (STUDENT_DOSSIERS[cleanId]) {
+    const d = STUDENT_DOSSIERS[cleanId];
+    if (d.full_name) fullName = d.full_name;
+    if (d.coding_profiles?.leetcode?.url) leetcode = d.coding_profiles.leetcode.url;
+    if (d.coding_profiles?.codechef?.url) codechef = d.coding_profiles.codechef.url;
+    if (d.coding_profiles?.linkedin?.url) linkedin = d.coding_profiles.linkedin.url;
+    if (d.coding_profiles?.github?.url) github = d.coding_profiles.github.url;
+  }
+
+  // 2. Check localStorage saved student profiles (live synced from student dashboard)
+  const map = getSavedStudentProfileMap();
+  const saved = map[cleanId];
+  if (saved) {
+    if (saved.full_name) fullName = saved.full_name;
+    if (saved.coding_profiles?.leetcode?.url) leetcode = saved.coding_profiles.leetcode.url;
+    if (saved.coding_profiles?.codechef?.url) codechef = saved.coding_profiles.codechef.url;
+    if (saved.coding_profiles?.linkedin?.url) linkedin = saved.coding_profiles.linkedin.url;
+    if (saved.coding_profiles?.github?.url) github = saved.coding_profiles.github.url;
+  }
+
   return {
     ...detail,
-    leetcode_url: `https://leetcode.com/u/${slug}_dev`,
-    codechef_url: `https://www.codechef.com/users/${slug}_tech`,
-    linkedin_url: `https://linkedin.com/in/${slug}-cse`,
-    github_url: `https://github.com/${slug}`,
+    full_name: fullName,
+    leetcode_url: leetcode,
+    codechef_url: codechef,
+    linkedin_url: linkedin,
+    github_url: github,
   };
 }
 
@@ -608,17 +637,104 @@ export function validateStudentCSV(csvText: string): CSVValidationReport {
   };
 }
 
-export async function commitCSVStudentImport(validRecords: any[]): Promise<{ imported_count: number }> {
-  // Log audit
+export async function commitCSVStudentImport(validRecords: any[]): Promise<{
+  imported_count: number;
+  imported_students: RawStudentMetrics[];
+}> {
+  if (!validRecords || validRecords.length === 0) {
+    return { imported_count: 0, imported_students: [] };
+  }
+
+  const newMetricsList: RawStudentMetrics[] = [];
+  const newUsersList: AdminUser[] = [];
+
+  for (const record of validRecords) {
+    const cleanRegNo = String(record.reg_no).trim().toUpperCase();
+    const rawSec = String(record.section || 'A').toUpperCase();
+    const secId = rawSec.includes('B') ? 'sec-b' : rawSec.includes('C') ? 'sec-c' : 'sec-a';
+    const cgpa = Number(record.cgpa) || 7.0;
+    const att = Number(record.attendance_pct) || 75.0;
+    const backlogs = Number(record.backlogs ?? 0) || 0;
+    const fullName = String(record.full_name || 'Student').trim();
+    const rawEmail = `${cleanRegNo.toLowerCase()}@campus.edu.in`;
+
+    const rawMetric: RawStudentMetrics = {
+      student_id: `stu-${cleanRegNo.toLowerCase()}`,
+      section_id: secId,
+      reg_no: cleanRegNo,
+      full_name: fullName,
+      cgpa,
+      backlogs,
+      avg_cie_marks: Number((cgpa * 0.95).toFixed(1)),
+      attendance_pct: att,
+      logins_30d: 22,
+      assignments_done: 18,
+      assignments_total: 20,
+      events: 2,
+      clubs: 1,
+      hackathons: 1,
+      certifications: 1,
+      aptitude: Math.min(100, Math.round(cgpa * 9.5)),
+      coding: Math.min(100, Math.round(cgpa * 9.2)),
+      mock_interview: Math.min(100, Math.round(cgpa * 9.0)),
+      communication: 7.5,
+      programming: 8.0,
+      leadership: 6.5,
+      sports: 6.0,
+      avg_feedback: 4.2,
+    };
+
+    newMetricsList.push(rawMetric);
+
+    const newUser: AdminUser = {
+      id: `usr-stu-${cleanRegNo.toLowerCase()}`,
+      email: rawEmail,
+      full_name: fullName,
+      role: 'student',
+      reg_no: cleanRegNo,
+      status: 'active',
+      created_at: new Date().toISOString(),
+    };
+    newUsersList.push(newUser);
+
+    // Update in-memory MOCK_USERS_STORE
+    const existingUserIdx = MOCK_USERS_STORE.findIndex((u) => u.reg_no.toUpperCase() === cleanRegNo);
+    if (existingUserIdx >= 0) {
+      MOCK_USERS_STORE[existingUserIdx] = newUser;
+    } else {
+      MOCK_USERS_STORE.unshift(newUser);
+    }
+  }
+
+  // 1. Commit and synchronize into student cohort in memory and localStorage
+  addStudentsToCohort(newMetricsList);
+
+  // 2. Persist to localStorage for client-side state longevity
+  if (typeof window !== 'undefined') {
+    try {
+      const savedUsers = JSON.parse(localStorage.getItem('campuspulse_custom_users') || '[]');
+      const userMap = new Map<string, AdminUser>();
+      savedUsers.forEach((u: AdminUser) => userMap.set(u.reg_no.toUpperCase(), u));
+      newUsersList.forEach((u) => userMap.set(u.reg_no.toUpperCase(), u));
+      localStorage.setItem('campuspulse_custom_users', JSON.stringify(Array.from(userMap.values())));
+
+      // Broadcast sync event to all listening components
+      window.dispatchEvent(new CustomEvent('campuspulse-data-updated'));
+    } catch (e) {
+      console.warn('[commitCSVStudentImport] localStorage persist error:', e);
+    }
+  }
+
+  // 3. Log audit event
   await logAuditEvent({
     action: 'CSV_COHORT_INGEST',
     actor: 'Administrator (ADM001)',
-    target: 'students_master',
-    details: `Ingested ${validRecords.length} validated student telemetry records. Deduplicated and synced.`,
+    target: `students_master (${validRecords.length} records)`,
+    details: `Ingested and committed ${validRecords.length} student profiles: ${validRecords.map((r) => `${r.full_name} (${r.reg_no})`).join(', ')}. Synced into students list and cohort database.`,
     severity: 'success',
   });
 
-  return { imported_count: validRecords.length };
+  return { imported_count: validRecords.length, imported_students: newMetricsList };
 }
 
 // ----------------------------------------------------------------------------

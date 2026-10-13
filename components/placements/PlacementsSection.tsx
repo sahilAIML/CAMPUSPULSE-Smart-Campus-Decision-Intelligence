@@ -128,19 +128,19 @@ export function PlacementsSection({
               <ClayBadge variant="sun" icon={<Briefcase className="h-3.5 w-3.5" />}>
                 Career & Corporate Intelligence
               </ClayBadge>
-              <span className="text-xs font-bold text-[var(--clay-muted)]">8-Year Placement Track Record</span>
+              <span className="text-xs font-bold text-white/95 drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)]">8-Year Placement Track Record</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold font-heading text-[var(--clay-text)] tracking-tight">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold font-heading text-white tracking-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.9)]">
               Placement Trends & Recruiters
             </h2>
-            <p className="text-sm sm:text-base text-[var(--clay-muted)] mt-1 max-w-xl">
+            <p className="text-sm sm:text-base text-white/95 mt-1 max-w-xl font-medium drop-shadow-[0_1px_6px_rgba(0,0,0,0.85)]">
               Historical conversion trends, package benchmarks, and top enterprise & quick-commerce recruiters.
             </p>
           </div>
 
           {/* Controls: Year Selector */}
           <div className="flex items-center gap-2 self-start md:self-auto">
-            <span className="text-xs font-heading font-extrabold text-[var(--clay-muted)] uppercase">Year:</span>
+            <span className="text-xs font-heading font-extrabold text-white uppercase drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)]">Year:</span>
             <div className="flex items-center gap-1.5 bg-[var(--clay-pressed)]/60 p-1 rounded-2xl border border-[var(--clay-border)]">
               {['all', '2026', '2025', '2024'].map((yr) => (
                 <button
@@ -161,7 +161,7 @@ export function PlacementsSection({
 
         {/* Company Quick-Filter Chips */}
         <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-8 scrollbar-none">
-          <div className="flex items-center gap-1.5 text-xs font-heading font-extrabold text-[var(--clay-muted)] uppercase pl-1 pr-2 flex-shrink-0">
+          <div className="flex items-center gap-1.5 text-xs font-heading font-extrabold text-white uppercase pl-1 pr-2 flex-shrink-0 drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)]">
             <Building2 className="h-3.5 w-3.5" />
             <span>Recruiter:</span>
           </div>
@@ -254,7 +254,7 @@ export function PlacementsSection({
 
         {/* Featured Recruiter Showcase Cards */}
         <div>
-          <h3 className="font-heading font-extrabold text-xl text-[var(--clay-text)] mb-4">
+          <h3 className="font-heading font-extrabold text-xl text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)] mb-4">
             Key Corporate Hiring Partners
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

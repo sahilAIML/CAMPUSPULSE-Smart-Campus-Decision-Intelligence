@@ -4,181 +4,64 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  /* Transparent canvas so the HD video fills the full screen edge-to-edge */
+:root, .theme-white {
+  /* Clean White Aesthetic */
   --clay-bg: transparent;
-  --clay-card: rgba(244, 247, 252, 0.94);
-  --clay-pressed: rgba(228, 233, 241, 0.92);
-  --clay-border: rgba(255, 255, 255, 0.85);
+  --clay-card: #FFFFFF;
+  --clay-pressed: #F8FAFC;
+  --clay-border: rgba(226, 232, 240, 0.95);
   --clay-text: #0F172A;
   --clay-muted: #334155;
 
   /* Double Shadows: Outer Drop + Inner Specular Highlight + Inner Shade */
-  --shadow-clay-card: 12px 12px 24px rgba(163, 177, 198, 0.45),
-                      -8px -8px 20px rgba(255, 255, 255, 0.9),
-                      inset 4px 4px 8px rgba(255, 255, 255, 0.7),
-                      inset -4px -4px 8px rgba(163, 177, 198, 0.25);
+  --shadow-clay-card: 10px 10px 24px rgba(148, 163, 184, 0.28),
+                      -6px -6px 18px rgba(255, 255, 255, 0.9),
+                      inset 3px 3px 6px rgba(255, 255, 255, 0.8),
+                      inset -3px -3px 6px rgba(148, 163, 184, 0.15);
 
-  --shadow-clay-card-hover: 14px 14px 28px rgba(163, 177, 198, 0.5),
-                            -10px -10px 24px rgba(255, 255, 255, 0.95),
-                            inset 4px 4px 8px rgba(255, 255, 255, 0.8),
-                            inset -4px -4px 8px rgba(163, 177, 198, 0.25);
+  --shadow-clay-card-hover: 12px 12px 28px rgba(148, 163, 184, 0.35),
+                            -8px -8px 22px rgba(255, 255, 255, 0.95),
+                            inset 3px 3px 6px rgba(255, 255, 255, 0.85),
+                            inset -3px -3px 6px rgba(148, 163, 184, 0.18);
 
-  --shadow-clay-card-pressed: inset 6px 6px 12px rgba(163, 177, 198, 0.45),
-                              inset -6px -6px 12px rgba(255, 255, 255, 0.8);
+  --shadow-clay-card-pressed: inset 5px 5px 10px rgba(148, 163, 184, 0.35),
+                              inset -5px -5px 10px rgba(255, 255, 255, 0.85);
 
-  --shadow-clay-btn: 8px 8px 18px rgba(163, 177, 198, 0.45),
-                     -6px -6px 14px rgba(255, 255, 255, 0.9),
-                     inset 3px 3px 6px rgba(255, 255, 255, 0.8),
-                     inset -3px -3px 6px rgba(163, 177, 198, 0.25);
+  --shadow-clay-btn: 6px 6px 16px rgba(148, 163, 184, 0.28),
+                     -4px -4px 12px rgba(255, 255, 255, 0.9),
+                     inset 2px 2px 5px rgba(255, 255, 255, 0.85),
+                     inset -2px -2px 5px rgba(148, 163, 184, 0.18);
 
-  --shadow-clay-btn-hover: 10px 10px 22px rgba(163, 177, 198, 0.5),
-                           -8px -8px 18px rgba(255, 255, 255, 0.95),
-                           inset 3px 3px 6px rgba(255, 255, 255, 0.9),
-                           inset -3px -3px 6px rgba(163, 177, 198, 0.25);
+  --shadow-clay-btn-hover: 8px 8px 20px rgba(148, 163, 184, 0.35),
+                           -6px -6px 16px rgba(255, 255, 255, 0.95),
+                           inset 2px 2px 5px rgba(255, 255, 255, 0.9),
+                           inset -2px -2px 5px rgba(148, 163, 184, 0.18);
 
-  --shadow-clay-btn-pressed: inset 5px 5px 10px rgba(163, 177, 198, 0.5),
-                             inset -5px -5px 10px rgba(255, 255, 255, 0.8);
+  --shadow-clay-btn-pressed: inset 4px 4px 8px rgba(148, 163, 184, 0.35),
+                             inset -4px -4px 8px rgba(255, 255, 255, 0.85);
 
-  --shadow-clay-input: inset 4px 4px 8px rgba(163, 177, 198, 0.45),
-                       inset -4px -4px 8px rgba(255, 255, 255, 0.85);
+  --shadow-clay-input: inset 3px 3px 6px rgba(148, 163, 184, 0.25),
+                       inset -3px -3px 6px rgba(255, 255, 255, 0.9);
 
-  --shadow-clay-badge: 4px 4px 10px rgba(163, 177, 198, 0.35),
-                       -3px -3px 8px rgba(255, 255, 255, 0.85),
-                       inset 2px 2px 4px rgba(255, 255, 255, 0.7),
-                       inset -2px -2px 4px rgba(163, 177, 198, 0.2);
+  --shadow-clay-badge: 3px 3px 8px rgba(148, 163, 184, 0.22),
+                       -2px -2px 6px rgba(255, 255, 255, 0.85),
+                       inset 1px 1px 3px rgba(255, 255, 255, 0.8),
+                       inset -1px -1px 3px rgba(148, 163, 184, 0.15);
 
-  --shadow-clay-pill: 6px 6px 14px rgba(163, 177, 198, 0.35),
-                      -4px -4px 10px rgba(255, 255, 255, 0.85),
-                      inset 2px 2px 5px rgba(255, 255, 255, 0.7),
-                      inset -2px -2px 5px rgba(163, 177, 198, 0.2);
+  --shadow-clay-pill: 4px 4px 10px rgba(148, 163, 184, 0.22),
+                      -3px -3px 8px rgba(255, 255, 255, 0.85),
+                      inset 1px 1px 4px rgba(255, 255, 255, 0.8),
+                      inset -1px -1px 4px rgba(148, 163, 184, 0.15);
 
-  --shadow-clay-coral: 8px 8px 18px rgba(255, 122, 89, 0.35),
-                       -6px -6px 14px rgba(255, 255, 255, 0.8),
-                       inset 3px 3px 6px rgba(255, 255, 255, 0.6),
-                       inset -3px -3px 6px rgba(200, 80, 50, 0.25);
+  --shadow-clay-coral: 6px 6px 16px rgba(255, 122, 89, 0.35),
+                       -4px -4px 12px rgba(255, 255, 255, 0.8),
+                       inset 2px 2px 5px rgba(255, 255, 255, 0.6),
+                       inset -2px -2px 5px rgba(200, 80, 50, 0.25);
 
-  --shadow-clay-teal: 8px 8px 18px rgba(46, 196, 182, 0.35),
-                      -6px -6px 14px rgba(255, 255, 255, 0.8),
-                      inset 3px 3px 6px rgba(255, 255, 255, 0.6),
-                      inset -3px -3px 6px rgba(30, 140, 130, 0.25);
-}
-
-.dark {
-  /* Dark Canvas with full HD video visibility */
-  --clay-bg: transparent;
-  --clay-card: rgba(17, 24, 39, 0.93);
-  --clay-pressed: rgba(15, 20, 32, 0.92);
-  --clay-border: rgba(255, 255, 255, 0.18);
-  --clay-text: #F8FAFC;
-  --clay-muted: #E2E8F0;
-
-  --shadow-clay-card: 10px 10px 22px rgba(10, 13, 18, 0.65),
-                      -6px -6px 16px rgba(44, 52, 70, 0.4),
-                      inset 3px 3px 6px rgba(255, 255, 255, 0.07),
-                      inset -3px -3px 6px rgba(10, 13, 18, 0.5);
-
-  --shadow-clay-card-hover: 12px 12px 26px rgba(10, 13, 18, 0.75),
-                            -8px -8px 20px rgba(44, 52, 70, 0.45),
-                            inset 3px 3px 6px rgba(255, 255, 255, 0.1),
-                            inset -3px -3px 6px rgba(10, 13, 18, 0.5);
-
-  --shadow-clay-card-pressed: inset 5px 5px 12px rgba(10, 13, 18, 0.8),
-                              inset -5px -5px 12px rgba(44, 52, 70, 0.35);
-
-  --shadow-clay-btn: 7px 7px 16px rgba(10, 13, 18, 0.65),
-                     -5px -5px 14px rgba(44, 52, 70, 0.4),
-                     inset 2px 2px 5px rgba(255, 255, 255, 0.1),
-                     inset -2px -2px 5px rgba(10, 13, 18, 0.5);
-
-  --shadow-clay-btn-hover: 9px 9px 20px rgba(10, 13, 18, 0.75),
-                           -7px -7px 16px rgba(44, 52, 70, 0.45),
-                           inset 2px 2px 5px rgba(255, 255, 255, 0.12),
-                           inset -2px -2px 5px rgba(10, 13, 18, 0.5);
-
-  --shadow-clay-btn-pressed: inset 4px 4px 10px rgba(10, 13, 18, 0.8),
-                             inset -4px -4px 10px rgba(44, 52, 70, 0.35);
-
-  --shadow-clay-input: inset 4px 4px 8px rgba(10, 13, 18, 0.7),
-                       inset -4px -4px 8px rgba(44, 52, 70, 0.35);
-
-  --shadow-clay-badge: 4px 4px 10px rgba(10, 13, 18, 0.5),
-                       -3px -3px 8px rgba(44, 52, 70, 0.3),
-                       inset 2px 2px 4px rgba(255, 255, 255, 0.08),
-                       inset -2px -2px 4px rgba(10, 13, 18, 0.4);
-
-  --shadow-clay-coral: 8px 8px 18px rgba(224, 95, 63, 0.4),
-                       -5px -5px 12px rgba(44, 52, 70, 0.35),
-                       inset 2px 2px 5px rgba(255, 255, 255, 0.2),
-                       inset -2px -2px 5px rgba(100, 30, 20, 0.5);
-
-  --shadow-clay-teal: 8px 8px 18px rgba(34, 158, 146, 0.4),
-                      -5px -5px 12px rgba(44, 52, 70, 0.35),
-                      inset 2px 2px 5px rgba(255, 255, 255, 0.2),
-                      inset -2px -2px 5px rgba(15, 70, 65, 0.5);
-}
-
-/* High-Contrast Black & White (Monochrome) Theme */
-.theme-bw {
-  --clay-bg: transparent;
-  --clay-card: rgba(14, 14, 18, 0.96);
-  --clay-pressed: rgba(24, 24, 30, 0.95);
-  --clay-border: rgba(255, 255, 255, 0.32);
-  --clay-text: #FFFFFF;
-  --clay-muted: #D4D4D8;
-
-  --shadow-clay-card: 10px 10px 22px rgba(0, 0, 0, 0.85),
-                      -6px -6px 16px rgba(55, 55, 65, 0.4),
-                      inset 2px 2px 5px rgba(255, 255, 255, 0.16),
-                      inset -2px -2px 5px rgba(0, 0, 0, 0.8);
-
-  --shadow-clay-card-hover: 12px 12px 26px rgba(0, 0, 0, 0.92),
-                            -8px -8px 20px rgba(70, 70, 80, 0.45),
-                            inset 2px 2px 5px rgba(255, 255, 255, 0.22),
-                            inset -2px -2px 5px rgba(0, 0, 0, 0.85);
-
-  --shadow-clay-btn: 7px 7px 16px rgba(0, 0, 0, 0.8),
-                     -5px -5px 14px rgba(55, 55, 65, 0.4),
-                     inset 2px 2px 4px rgba(255, 255, 255, 0.16),
-                     inset -2px -2px 4px rgba(0, 0, 0, 0.8);
-
-  --shadow-clay-coral: 8px 8px 18px rgba(0, 0, 0, 0.75),
-                       -5px -5px 12px rgba(60, 60, 70, 0.35),
-                       inset 2px 2px 5px rgba(255, 255, 255, 0.25),
-                       inset -2px -2px 5px rgba(0, 0, 0, 0.7);
-
-  --shadow-clay-teal: 8px 8px 18px rgba(0, 0, 0, 0.75),
-                      -5px -5px 12px rgba(60, 60, 70, 0.35),
-                      inset 2px 2px 5px rgba(255, 255, 255, 0.25),
-                      inset -2px -2px 5px rgba(0, 0, 0, 0.7);
-}
-
-html.theme-bw {
-  color-scheme: dark;
-}
-
-html.theme-bw video {
-  filter: grayscale(100%) contrast(120%) brightness(0.85);
-}
-
-html.theme-bw img {
-  filter: grayscale(100%) contrast(105%);
-}
-
-html.theme-bw .bg-gradient-to-r,
-html.theme-bw .bg-gradient-to-br,
-html.theme-bw .bg-gradient-to-tr,
-html.theme-bw [class*="text-[#"],
-html.theme-bw [class*="bg-[#"],
-html.theme-bw [class*="border-[#"],
-html.theme-bw [class*="text-rose-"],
-html.theme-bw [class*="text-emerald-"],
-html.theme-bw [class*="text-amber-"],
-html.theme-bw [class*="text-blue-"],
-html.theme-bw [class*="bg-rose-"],
-html.theme-bw [class*="bg-emerald-"],
-html.theme-bw [class*="bg-amber-"] {
-  filter: grayscale(100%);
+  --shadow-clay-teal: 6px 6px 16px rgba(46, 196, 182, 0.35),
+                      -4px -4px 12px rgba(255, 255, 255, 0.8),
+                      inset 2px 2px 5px rgba(255, 255, 255, 0.6),
+                      inset -2px -2px 5px rgba(30, 140, 130, 0.25);
 }
 
 /* Base resets & Oxanium typography */
@@ -198,11 +81,6 @@ body {
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-oxanium), 'Oxanium', monospace, sans-serif;
   letter-spacing: -0.01em;
-  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.4);
-}
-
-.dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
 }
 
 input, button, select, textarea {

@@ -6,16 +6,12 @@ import {
   Sparkles,
   TrendingUp,
   AlertTriangle,
-  CheckCircle2,
   Calendar,
-  Send,
   BookOpen,
   Users,
-  ShieldAlert,
   ArrowUpRight,
   ArrowDownRight,
   FileText,
-  ExternalLink,
 } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -35,9 +31,7 @@ import {
 } from 'recharts';
 import { ClayCard } from '../ui/ClayCard';
 import { ClayBadge } from '../ui/ClayBadge';
-import { ClayButton } from '../ui/ClayButton';
-import { ClayInput } from '../ui/ClayInput';
-import { StudentDetail, getStudentDetail, assignIntervention } from '@/lib/data/students';
+import { StudentDetail, getStudentDetail } from '@/lib/data/students';
 
 interface StudentDrawerProps {
   studentId: string | null;
@@ -54,15 +48,6 @@ export function StudentDrawer({
   const [loading, setLoading] = useState(false);
   const [trendMode, setTrendMode] = useState<'attendance' | 'marks'>('attendance');
 
-  // Intervention form states
-  const [intervType, setIntervType] = useState('mentoring');
-  const [intervNote, setIntervNote] = useState('');
-  const [intervDate, setIntervDate] = useState(
-    new Date(Date.now() + 14 * 86400000).toISOString().split('T')[0]
-  );
-  const [submitting, setSubmitting] = useState(false);
-  const [submitSuccess, setSubmitSuccess] = useState(false);
-
   useEffect(() => {
     if (!studentId) {
       setStudent(null);
@@ -78,24 +63,6 @@ export function StudentDrawer({
   }, [studentId]);
 
   if (!studentId) return null;
-
-  const handleAssignIntervention = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!student || !intervNote.trim()) return;
-
-    setSubmitting(true);
-    await assignIntervention(student.reg_no, intervType, intervNote, intervDate);
-    setSubmitting(false);
-    setSubmitSuccess(true);
-    setIntervNote('');
-
-    // Reload student details to refresh interventions list
-    const updated = await getStudentDetail(student.student_id);
-    if (updated) setStudent(updated);
-    if (onInterventionAdded) onInterventionAdded();
-
-    setTimeout(() => setSubmitSuccess(false), 3000);
-  };
 
   // 7-Indicator Radar Chart Data
   const radarData = student
@@ -477,126 +444,6 @@ export function StudentDrawer({
                       </span>
                     </div>
                   </div>
-                </ClayCard>
-              </div>
-
-              {/* 5. Assign Intervention Form */}
-              <div className="pt-2">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="font-heading font-extrabold text-base text-[var(--clay-text)]">
-                    Prescriptive Action & Log Intervention
-                  </h3>
-                  <ClayBadge variant="coral" size="sm">Faculty Action</ClayBadge>
-                </div>
-
-                <ClayCard className="p-5 sm:p-6">
-                  {/* Prescribed Action Banner */}
-                  <div className="p-3.5 rounded-2xl bg-[#5B6CFF]/10 border border-[#5B6CFF]/30 text-xs text-[var(--clay-text)] font-semibold mb-5 flex items-start gap-2.5">
-                    <Sparkles className="h-4 w-4 text-[#5B6CFF] flex-shrink-0 mt-0.5" />
-                    <div>
-                      <span className="font-bold text-[#5B6CFF] block">Algorithmic Recommendation:</span>
-                      {student.analytics.segment.suggested_intervention}
-                    </div>
-                  </div>
-
-                  {submitSuccess && (
-                    <div className="mb-4 p-3 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-700 dark:text-emerald-400 text-xs font-bold flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4" />
-                      <span>Intervention successfully logged and scheduled!</span>
-                    </div>
-                  )}
-
-                  <form onSubmit={handleAssignIntervention} className="space-y-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div>
-                        <label className="text-xs font-heading font-extrabold text-[var(--clay-text)] block mb-1.5 ml-1">
-                          Action Type
-                        </label>
-                        <select
-                          value={intervType}
-                          onChange={(e) => setIntervType(e.target.value)}
-                          className="w-full rounded-2xl bg-[var(--clay-card)] border border-[var(--clay-border)] text-[var(--clay-text)] shadow-[var(--shadow-clay-input)] px-4 py-2.5 text-xs font-bold outline-none min-h-[44px]"
-                        >
-                          <option value="attendance_warning">Attendance Warning & Target</option>
-                          <option value="mentoring">1-on-1 Faculty Mentoring</option>
-                          <option value="remedial_class">Enroll in Remedial Clinic</option>
-                          <option value="parent_meeting">Guardian / Parent Conference</option>
-                          <option value="counseling">Academic Counseling</option>
-                          <option value="placement_training">DSA Coding Sprint Bootcamp</option>
-                        </select>
-                      </div>
-
-                      <ClayInput
-                        label="Target Due Date"
-                        type="date"
-                        value={intervDate}
-                        onChange={(e) => setIntervDate(e.target.value)}
-                        required
-                      />
-                    </div>
-
-                    <div>
-                      <label className="text-xs font-heading font-extrabold text-[var(--clay-text)] block mb-1.5 ml-1">
-                        Intervention Notes & Targets
-                      </label>
-                      <textarea
-                        rows={3}
-                        placeholder="Detail specific remedial goals, lecture commitments, or test clearance targets..."
-                        value={intervNote}
-                        onChange={(e) => setIntervNote(e.target.value)}
-                        className="w-full rounded-2xl bg-[var(--clay-card)] border border-[var(--clay-border)] text-[var(--clay-text)] shadow-[var(--shadow-clay-input)] p-3 text-xs font-medium outline-none placeholder:text-[var(--clay-muted)] focus:ring-2 focus:ring-[#FF7A59] transition-all resize-none"
-                        required
-                      />
-                    </div>
-
-                    <ClayButton
-                      type="submit"
-                      variant="coral"
-                      size="md"
-                      fullWidth
-                      disabled={submitting}
-                    >
-                      <Send className="h-4 w-4" />
-                      <span>{submitting ? 'Logging...' : 'Assign & Notify Student'}</span>
-                    </ClayButton>
-                  </form>
-
-                  {/* Active Interventions History */}
-                  {student.interventions.length > 0 && (
-                    <div className="mt-6 pt-5 border-t border-[var(--clay-border)]">
-                      <span className="text-xs font-heading font-extrabold text-[var(--clay-muted)] uppercase tracking-wider block mb-3">
-                        Active Interventions History ({student.interventions.length})
-                      </span>
-                      <div className="space-y-2">
-                        {student.interventions.map((item) => (
-                          <div
-                            key={item.id}
-                            className="p-3 rounded-2xl bg-[var(--clay-card)] border border-[var(--clay-border)] shadow-[var(--shadow-clay-badge)] text-xs flex items-start justify-between gap-3"
-                          >
-                            <div>
-                              <div className="flex items-center gap-2 mb-1">
-                                <span className="font-heading font-extrabold text-[var(--clay-text)] capitalize">
-                                  {item.type.replace('_', ' ')}
-                                </span>
-                                <ClayBadge
-                                  variant={item.status === 'escalated' ? 'risk-critical' : 'teal'}
-                                  size="sm"
-                                >
-                                  {item.status.toUpperCase()}
-                                </ClayBadge>
-                              </div>
-                              <p className="text-[11px] text-[var(--clay-muted)]">{item.note}</p>
-                            </div>
-                            {item.due_date && (
-                              <span className="text-[10px] font-bold text-[var(--clay-muted)] flex-shrink-0 tabular-nums">
-                                Due: {item.due_date}
-                              </span>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
                 </ClayCard>
               </div>
             </div>

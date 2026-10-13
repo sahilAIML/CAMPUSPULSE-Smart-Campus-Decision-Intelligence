@@ -34,7 +34,7 @@ export default function FacultyDashboardPage() {
   const [selectedSegment, setSelectedSegment] = useState<string | null>(null);
 
   // Authentication & Security Guard
-  const [currentUser, setCurrentUser] = useState<AuthUser | null>(() => getSessionUser());
+  const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
   const [authChecked, setAuthChecked] = useState(false);
 
   useEffect(() => {
@@ -122,13 +122,13 @@ export default function FacultyDashboardPage() {
 
         {/* Quick View Mode Switcher Pills */}
         <div className="flex items-center justify-between gap-3 mb-6 overflow-x-auto pb-1 scrollbar-none">
-          <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-[var(--clay-pressed)]/80 border border-[var(--clay-border)]">
+          <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-black/35 backdrop-blur-md border border-white/20 shadow-sm">
             <button
               onClick={() => setActiveTab('home')}
-              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl font-heading font-extrabold text-xs transition-all ${
+              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl font-heading text-xs transition-all ${
                 activeTab === 'home'
-                  ? 'bg-[var(--clay-card)] text-[#FF7A59] shadow-sm'
-                  : 'text-[var(--clay-muted)] hover:text-[var(--clay-text)]'
+                  ? 'bg-white text-[#FF7A59] shadow-sm font-extrabold'
+                  : 'text-white/90 hover:text-white hover:bg-white/10 font-bold'
               }`}
             >
               <LayoutDashboard className="h-3.5 w-3.5" />
@@ -137,10 +137,10 @@ export default function FacultyDashboardPage() {
 
             <button
               onClick={() => setActiveTab('exams')}
-              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl font-heading font-extrabold text-xs transition-all ${
+              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl font-heading text-xs transition-all ${
                 activeTab === 'exams'
-                  ? 'bg-[var(--clay-card)] text-[#FF7A59] shadow-sm'
-                  : 'text-[var(--clay-muted)] hover:text-[var(--clay-text)]'
+                  ? 'bg-white text-[#FF7A59] shadow-sm font-extrabold'
+                  : 'text-white/90 hover:text-white hover:bg-white/10 font-bold'
               }`}
             >
               <FileCheck2 className="h-3.5 w-3.5 text-[#5B6CFF]" />
@@ -149,10 +149,10 @@ export default function FacultyDashboardPage() {
 
             <button
               onClick={() => setActiveTab('results')}
-              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl font-heading font-extrabold text-xs transition-all ${
+              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl font-heading text-xs transition-all ${
                 activeTab === 'results'
-                  ? 'bg-[var(--clay-card)] text-[#FF7A59] shadow-sm'
-                  : 'text-[var(--clay-muted)] hover:text-[var(--clay-text)]'
+                  ? 'bg-white text-[#FF7A59] shadow-sm font-extrabold'
+                  : 'text-white/90 hover:text-white hover:bg-white/10 font-bold'
               }`}
             >
               <GraduationCap className="h-3.5 w-3.5 text-[#2EC4B6]" />
@@ -164,11 +164,11 @@ export default function FacultyDashboardPage() {
           <Link
             href="/student/exam/exam-cie2-dsa"
             target="_blank"
-            className="flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-gradient-to-r from-[#5B6CFF]/15 to-[#2EC4B6]/15 border border-[#5B6CFF]/30 text-xs font-heading font-extrabold text-[#5B6CFF] hover:opacity-90 active:scale-95 transition-all shadow-[var(--clay-badge)] flex-shrink-0"
+            className="flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-gradient-to-r from-[#5B6CFF] to-[#2EC4B6] border border-white/30 text-xs font-heading font-extrabold text-white hover:opacity-95 active:scale-95 transition-all shadow-md flex-shrink-0 drop-shadow"
           >
-            <Sparkles className="h-3.5 w-3.5 text-[#5B6CFF]" />
+            <Sparkles className="h-3.5 w-3.5 text-white" />
             <span>Launch Timed Exam (Student View)</span>
-            <ExternalLink className="h-3.5 w-3.5" />
+            <ExternalLink className="h-3.5 w-3.5 text-white" />
           </Link>
         </div>
 

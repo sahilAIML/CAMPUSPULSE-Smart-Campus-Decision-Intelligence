@@ -5,7 +5,7 @@ import {
   LayoutDashboard,
   CalendarCheck,
   FileCheck2,
-  HeartHandshake,
+  GraduationCap,
   LogOut,
 } from 'lucide-react';
 import { logoutUser } from '@/lib/data/auth';
@@ -26,7 +26,7 @@ export function FacultyBottomBar({
     { id: 'home', label: 'Home', icon: <LayoutDashboard className="h-5 w-5" /> },
     { id: 'attendance', label: 'Attendance', icon: <CalendarCheck className="h-5 w-5" /> },
     { id: 'exams', label: 'Exams', icon: <FileCheck2 className="h-5 w-5" /> },
-    { id: 'interventions', label: 'Intervene', icon: <HeartHandshake className="h-5 w-5" /> },
+    { id: 'results', label: 'Results', icon: <GraduationCap className="h-5 w-5" /> },
   ];
 
   const handleLogout = () => {

@@ -25,17 +25,19 @@ export function FacultyHeader({
   const [showDropdown, setShowDropdown] = useState(false);
   const searchContainerRef = useRef<HTMLDivElement>(null);
 
-  const user = getSessionUser();
-  const displayName = user?.full_name || 'Dr. K.V. Krishna Kishore';
-  const displayId = user?.reg_no || 'CSE_001';
+  const [greeting, setGreeting] = useState('Good morning');
+  const [sessionUser, setSessionUser] = useState<any>(null);
 
-  // Dynamic greeting based on current local hour
-  const getGreeting = () => {
+  useEffect(() => {
+    setSessionUser(getSessionUser());
     const hour = new Date().getHours();
-    if (hour < 12) return 'Good morning';
-    if (hour < 17) return 'Good afternoon';
-    return 'Good evening';
-  };
+    if (hour < 12) setGreeting('Good morning');
+    else if (hour < 17) setGreeting('Good afternoon');
+    else setGreeting('Good evening');
+  }, []);
+
+  const displayName = sessionUser?.full_name || 'Prof. Ananya Sharma';
+  const displayId = sessionUser?.reg_no || 'FAC210';
 
   // Filter students for instant autocomplete
   const suggestions = searchQuery.trim().length > 0
@@ -60,31 +62,31 @@ export function FacultyHeader({
       {/* Left: Greeting & Section Tabs */}
       <div className="flex flex-col gap-2">
         <div className="flex items-center gap-2">
-          <span className="text-xs font-heading font-extrabold text-[var(--clay-muted)] uppercase tracking-wider">
-            {getGreeting()},
+          <span suppressHydrationWarning className="text-xs font-heading font-extrabold text-white/95 uppercase tracking-wider drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
+            {greeting},
           </span>
           <ClayBadge variant="teal" size="sm">Active Term: Sem V</ClayBadge>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold font-heading text-[var(--clay-text)] tracking-tight">
-          {displayName} <span className="text-xs font-bold text-[var(--clay-muted)] font-normal">({displayId})</span>
+        <h1 className="text-2xl sm:text-3xl font-extrabold font-heading text-white tracking-tight drop-shadow-[0_2px_10px_rgba(0,0,0,0.95)]">
+          {displayName} <span className="text-xs font-bold text-white/85 font-normal drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">({displayId})</span>
         </h1>
 
         {/* Section Tabs (Clay Pill Toggles, Active = Pressed) */}
         <div className="flex items-center gap-2 mt-1">
-          <span className="text-xs font-heading font-extrabold text-[var(--clay-muted)] uppercase mr-1 hidden sm:inline">
+          <span className="text-xs font-heading font-extrabold text-white uppercase mr-1 hidden sm:inline drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
             Section:
           </span>
-          <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-[var(--clay-pressed)]/70 border border-[var(--clay-border)]">
+          <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-black/35 backdrop-blur-md border border-white/20 shadow-sm">
             {(['A', 'B', 'C', 'all'] as const).map((sec) => {
               const isActive = currentSection === sec;
               return (
                 <button
                   key={sec}
                   onClick={() => onSectionChange(sec)}
-                  className={`px-3.5 py-1.5 rounded-xl font-heading font-bold text-xs select-none transition-all min-h-[38px] ${
+                  className={`px-3.5 py-1.5 rounded-xl font-heading text-xs select-none transition-all min-h-[38px] ${
                     isActive
-                      ? 'bg-[var(--clay-card)] text-[#FF7A59] shadow-[var(--shadow-clay-btn-pressed)] scale-[0.97] border border-[var(--clay-border)]'
-                      : 'text-[var(--clay-muted)] hover:text-[var(--clay-text)]'
+                      ? 'bg-white text-[#FF7A59] shadow-[var(--shadow-clay-btn-pressed)] scale-[0.97] border border-white font-extrabold'
+                      : 'text-white/90 hover:text-white hover:bg-white/10 font-bold'
                   }`}
                 >
                   {sec === 'all' ? 'All Sections' : `Section ${sec}`}

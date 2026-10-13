@@ -10,7 +10,6 @@ import {
   FileCheck2,
   GraduationCap,
   Briefcase,
-  HeartHandshake,
   LogOut,
   User,
   ShieldCheck,
@@ -28,10 +27,15 @@ export function FacultySidebar({
   onTabChange,
 }: FacultySidebarProps) {
   const router = useRouter();
-  const user = getSessionUser();
-  const fullName = user?.full_name || 'Dr. K.V. Krishna Kishore';
-  const regNo = user?.reg_no || 'CSE_001';
-  const avatarUrl = user?.avatar_url || 'https://vignan.ac.in/Facultyprofiles/uploads/163/profilepic163.png';
+  const [sessionUser, setSessionUser] = React.useState<any>(null);
+
+  React.useEffect(() => {
+    setSessionUser(getSessionUser());
+  }, []);
+
+  const fullName = sessionUser?.full_name || 'Prof. Ananya Sharma';
+  const regNo = sessionUser?.reg_no || 'FAC210';
+  const avatarUrl = sessionUser?.avatar_url || 'https://vignan.ac.in/Facultyprofiles/uploads/163/profilepic163.png';
 
   const navItems = [
     { id: 'home', label: 'Home', icon: <LayoutDashboard className="h-5 w-5" /> },
@@ -39,7 +43,6 @@ export function FacultySidebar({
     { id: 'exams', label: 'Exams', icon: <FileCheck2 className="h-5 w-5" /> },
     { id: 'results', label: 'Results', icon: <GraduationCap className="h-5 w-5" /> },
     { id: 'placements', label: 'Placements', icon: <Briefcase className="h-5 w-5" /> },
-    { id: 'interventions', label: 'Interventions', icon: <HeartHandshake className="h-5 w-5" /> },
   ];
 
   const handleLogout = () => {
@@ -91,13 +94,6 @@ export function FacultySidebar({
 
       {/* User Profile & Logout Bottom Card */}
       <div className="pt-4 border-t border-[var(--clay-border)] space-y-3">
-        {/* Black / White / B&W Theme Option */}
-        <div className="flex items-center justify-between px-1">
-          <span className="text-[10px] font-extrabold uppercase tracking-wider text-[var(--clay-muted)]">
-            Theme Mode:
-          </span>
-          <ThemeToggle size="sm" />
-        </div>
 
         {/* Faculty Profile Card */}
         <div className="p-3.5 rounded-2xl bg-[var(--clay-pressed)]/70 border border-[var(--clay-border)] flex items-center gap-3">

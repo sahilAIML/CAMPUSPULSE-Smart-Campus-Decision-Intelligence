@@ -46,23 +46,20 @@ import { ThemeToggle } from '@/components/ui/ThemeToggle';
 
 export default function StudentPortalPage() {
   const router = useRouter();
-  const [currentUser, setCurrentUser] = useState(() => getSessionUser());
-  const [currentRegNo, setCurrentRegNo] = useState<string>(() => {
-    const u = getSessionUser();
-    return u?.reg_no || '241FA18067';
-  });
+  const [currentUser, setCurrentUser] = useState<AuthUser | null>(null);
+  const [currentRegNo, setCurrentRegNo] = useState<string>('241FA18067');
 
   const [dossier, setDossier] = useState<DetailedStudentDossier>(() =>
-    getSynchronousStudentDossier(currentUser?.reg_no || '241FA18067')
+    getSynchronousStudentDossier('241FA18067')
   );
   const [actions, setActions] = useState<StudentImprovementAction[]>(() =>
-    getSynchronousImprovementActions(currentUser?.reg_no || '241FA18067')
+    getSynchronousImprovementActions('241FA18067')
   );
   const [upcomingExams, setUpcomingExams] = useState<StudentExamSchedule[]>(() =>
     getSynchronousUpcomingExams()
   );
   const [results, setResults] = useState<StudentExamResultItem[]>(() =>
-    getSynchronousExamResults(currentUser?.reg_no || '241FA18067')
+    getSynchronousExamResults('241FA18067')
   );
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [loading, setLoading] = useState(false);
@@ -141,7 +138,7 @@ export default function StudentPortalPage() {
           <div className="h-10 w-10 rounded-2xl bg-[#FF7A59] text-white flex items-center justify-center animate-spin">
             <Sparkles className="h-5 w-5" />
           </div>
-          <span className="font-heading font-extrabold text-sm text-[var(--clay-muted)]">
+          <span className="font-heading font-extrabold text-sm text-white drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)]">
             Loading Student Intelligence Dossier...
           </span>
         </div>

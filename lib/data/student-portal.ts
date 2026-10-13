@@ -135,7 +135,7 @@ export interface DetailedStudentDossier {
 // MOCK DATA STORE
 // ----------------------------------------------------------------------------
 
-const STUDENT_DOSSIERS: Record<string, DetailedStudentDossier> = {
+export const STUDENT_DOSSIERS: Record<string, DetailedStudentDossier> = {
   '241FA18067': {
     reg_no: '241FA18067',
     full_name: 'MD SAHIL',
@@ -705,9 +705,64 @@ export function getSynchronousExamResults(regNo: string = '241FA18067'): Student
   return STUDENT_EXAM_RESULTS[regNo] || STUDENT_EXAM_RESULTS['241FA18067'];
 }
 
+export const STORAGE_KEY_STUDENT_PROFILES = 'campuspulse_student_profiles';
+
+export function getSavedStudentProfileMap(): Record<string, any> {
+  if (typeof window === 'undefined') return {};
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_STUDENT_PROFILES);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
+export function saveStudentProfileToStorage(regNo: string, profileData: any) {
+  if (typeof window === 'undefined') return;
+  try {
+    const map = getSavedStudentProfileMap();
+    map[regNo.toUpperCase()] = profileData;
+    localStorage.setItem(STORAGE_KEY_STUDENT_PROFILES, JSON.stringify(map));
+    window.dispatchEvent(new CustomEvent('campuspulse-data-updated'));
+  } catch {}
+}
+
 export async function getStudentDossier(regNo: string = '241FA18067'): Promise<DetailedStudentDossier> {
-  const dossier = STUDENT_DOSSIERS[regNo] || STUDENT_DOSSIERS['241FA18067'];
-  return JSON.parse(JSON.stringify(dossier));
+  const cleanReg = regNo.toUpperCase();
+  const base = STUDENT_DOSSIERS[cleanReg] || STUDENT_DOSSIERS['241FA18067'];
+  const dossier: DetailedStudentDossier = JSON.parse(JSON.stringify(base));
+
+  // Merge any persisted edits from localStorage
+  const map = getSavedStudentProfileMap();
+  const saved = map[cleanReg];
+  if (saved) {
+    if (saved.full_name) dossier.full_name = saved.full_name;
+    if (saved.coding_profiles) {
+      if (saved.coding_profiles.leetcode?.url) {
+        dossier.coding_profiles.leetcode.url = saved.coding_profiles.leetcode.url;
+        if (saved.coding_profiles.leetcode.username) {
+          dossier.coding_profiles.leetcode.username = saved.coding_profiles.leetcode.username;
+        }
+      }
+      if (saved.coding_profiles.github?.url) {
+        dossier.coding_profiles.github.url = saved.coding_profiles.github.url;
+        if (saved.coding_profiles.github.username) {
+          dossier.coding_profiles.github.username = saved.coding_profiles.github.username;
+        }
+      }
+      if (saved.coding_profiles.linkedin?.url) {
+        dossier.coding_profiles.linkedin.url = saved.coding_profiles.linkedin.url;
+      }
+      if (saved.coding_profiles.codechef?.url) {
+        dossier.coding_profiles.codechef.url = saved.coding_profiles.codechef.url;
+        if (saved.coding_profiles.codechef.username) {
+          dossier.coding_profiles.codechef.username = saved.coding_profiles.codechef.username;
+        }
+      }
+    }
+  }
+
+  return dossier;
 }
 
 export async function getStudentImprovementActions(regNo: string = '241FA18067'): Promise<StudentImprovementAction[]> {
@@ -735,7 +790,8 @@ export async function updateStudentProfile(
     codechef_url?: string;
   }
 ): Promise<DetailedStudentDossier> {
-  const current = STUDENT_DOSSIERS[regNo] || STUDENT_DOSSIERS['241FA18067'];
+  const cleanReg = regNo.toUpperCase();
+  const current = STUDENT_DOSSIERS[cleanReg] || STUDENT_DOSSIERS['241FA18067'];
 
   if (updates.full_name && updates.full_name.trim()) {
     current.full_name = updates.full_name.trim();
@@ -762,13 +818,37 @@ export async function updateStudentProfile(
     if (user && !user.includes('http')) current.coding_profiles.codechef.username = user;
   }
 
+  // Persist to localStorage for cross-page & cross-role access (Admin & Student)
+  saveStudentProfileToStorage(cleanReg, {
+    reg_no: cleanReg,
+    full_name: current.full_name,
+    coding_profiles: {
+      leetcode: {
+        url: current.coding_profiles.leetcode.url,
+        username: current.coding_profiles.leetcode.username,
+      },
+      github: {
+        url: current.coding_profiles.github.url,
+        username: current.coding_profiles.github.username,
+      },
+      linkedin: {
+        url: current.coding_profiles.linkedin.url,
+      },
+      codechef: {
+        url: current.coding_profiles.codechef.url,
+        username: current.coding_profiles.codechef.username,
+      },
+    },
+    updated_at: new Date().toISOString(),
+  });
+
   // Update session user if matching
   if (typeof window !== 'undefined') {
     const raw = localStorage.getItem('campuspulse_active_user');
     if (raw) {
       try {
         const u = JSON.parse(raw);
-        if (u.reg_no === regNo && updates.full_name) {
+        if (u.reg_no?.toUpperCase() === cleanReg && updates.full_name) {
           u.full_name = updates.full_name.trim();
           localStorage.setItem('campuspulse_active_user', JSON.stringify(u));
         }
