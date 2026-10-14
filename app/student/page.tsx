@@ -23,7 +23,7 @@ import {
   getStudentExamResults,
 } from '@/lib/data/student-portal';
 import { getAnnouncements } from '@/lib/data/announcements';
-import { Announcement } from '@/lib/data/types';
+import { Announcement, AuthUser } from '@/lib/data/types';
 import { StudentPortalHeader } from '@/components/student/StudentPortalHeader';
 import { StudentScoreGauge } from '@/components/student/StudentScoreGauge';
 import { StudentIndicatorsList } from '@/components/student/StudentIndicatorsList';
